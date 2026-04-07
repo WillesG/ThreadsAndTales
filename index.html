@@ -914,7 +914,7 @@ function App(){
   var _cAct=useState(0);var cAct=_cAct[0];var sCAct=_cAct[1];
   var _cFxs=useState([]);var cFxs=_cFxs[0];var sCFxs=_cFxs[1];
 
-  useEffect(function(){var ld=loadAll();var meta=ld.meta||{campaign:"Threads&Tales"};if(meta.campaign==="New Campaign")meta.campaign="Threads&Tales";sSave("meta",meta);sDA({meta:meta,locations:ld.locations||[],npcs:ld.npcs||[],encounters:ld.encounters||[],monsters:ld.monsters||[],factions:ld.factions||[],sessions:ld.sessions||[],party:ld.party||[],storyNodes:ld.storyNodes||[],storyEdges:ld.storyEdges||[]});sLo(false)},[]);
+  useEffect(function(){var ld=loadAll();var meta=ld.meta||{campaign:"Threads And Tales"};if(meta.campaign==="New Campaign")meta.campaign="Threads And Tales";sSave("meta",meta);sDA({meta:meta,locations:ld.locations||[],npcs:ld.npcs||[],encounters:ld.encounters||[],monsters:ld.monsters||[],factions:ld.factions||[],sessions:ld.sessions||[],party:ld.party||[],storyNodes:ld.storyNodes||[],storyEdges:ld.storyEdges||[]});sLo(false)},[]);
 
   var shT=useCallback(function(m,t){sTo({msg:m,type:t||"ok",key:Date.now()})},[]);
   var nav=useCallback(function(t,id){sSl({type:t,id:id});sVw("content");sSb(false)},[]);
