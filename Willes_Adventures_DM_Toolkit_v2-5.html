@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DM Toolkit">
+<meta name="theme-color" content="#1a1a2e">
+<title>Willes' Adventures — DM Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--sbg:#1a1a2e;--sbgh:#25254a;--sbga:#2d2d5e;--bg:#f7f5f0;--card:#fff;--inp:#faf9f6;--tx:#2c2c2c;--tx2:#6b6b6b;--txs:#c8c8d8;--txsb:#eeeef6;--ac:#8b5e3c;--acl:#c49a6c;--ach:#a0724e;--acbg:#f5ede4;--bd:#e0ddd6;--bdl:#eae7e0;--dg:#c0392b;--ok:#27ae60}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow:hidden;position:fixed;font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+#root{height:100%;width:100%}
+.app{display:flex;height:100vh;width:100vw;overflow:hidden}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--sbg);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s ease;z-index:30}
+.sidebar.closed{transform:translateX(-100%)}
+.sb-bk{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25}
+.sb-hd{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-hd h1{font-family:'Alegreya',serif;font-size:18px;font-weight:700;color:var(--acl);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-x{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:rgba(255,255,255,.08);border-radius:7px;color:var(--txs);cursor:pointer;flex-shrink:0}
+.sb-x:hover{background:rgba(255,255,255,.15);color:var(--txsb)}
+.sb-sr{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-si{display:flex;align-items:center;background:rgba(255,255,255,.07);border-radius:8px;padding:0 10px;gap:8px}
+.sb-si input{flex:1;background:none;border:none;color:var(--txsb);font-size:14px;padding:9px 0;outline:none;font-family:inherit}
+.sb-si input::placeholder{color:rgba(200,200,216,.35)}
+.sb-sc{flex:1;overflow-y:auto;scrollbar-width:thin}
+.sb-sec{border-bottom:1px solid rgba(255,255,255,.06)}
+.sec-h{display:flex;align-items:center;gap:7px;padding:10px 14px;cursor:pointer;color:var(--txs);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.1px;user-select:none}
+.sec-h:hover{color:var(--txsb)}
+.sec-h .ar{transition:transform .2s;display:flex}
+.sec-h.open .ar{transform:rotate(90deg)}
+.sec-h .bd{margin-left:auto;background:rgba(255,255,255,.08);padding:1px 6px;border-radius:10px;font-size:10px}
+.sb-add{display:flex;align-items:center;gap:5px;padding:6px 14px 6px 26px;cursor:pointer;color:var(--acl);font-size:12px;opacity:.7;border:none;background:none;font-family:inherit;width:100%}
+.sb-add:hover{opacity:1}
+.sb-it{display:flex;align-items:center;gap:7px;padding:9px 14px 9px 26px;cursor:pointer;color:var(--txs);font-size:13px;min-height:42px;border-left:3px solid transparent;transition:all .12s}
+.sb-it:hover{background:var(--sbgh);color:var(--txsb)}
+.sb-it.act{background:var(--sbga);color:var(--acl);border-left-color:var(--acl)}
+.sb-it .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-it .ic{flex-shrink:0;opacity:.6}
+.sb-it.dim{opacity:.45}
+.sb-it.dim:hover{opacity:.7}
+.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.st-flt{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.st-flt label{font-size:11px;color:var(--txs);flex:1;cursor:pointer;user-select:none}
+.st-flt input[type="checkbox"]{accent-color:var(--acl);cursor:pointer}
+.det-st{display:flex;align-items:center;gap:8px;margin-top:10px;margin-bottom:4px}
+.det-st label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2)}
+.det-st select{padding:5px 8px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--inp);outline:none}
+.det-st select:focus{border-color:var(--ac)}
+.tree-it{padding-left:calc(26px + var(--d,0) * 18px)}
+.tr-ar{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;opacity:.5;transition:transform .2s}
+.tr-ar:hover{opacity:1}
+.tr-ar.exp{transform:rotate(90deg)}
+.tr-ar.hid{opacity:0;pointer-events:none}
+.tag{font-size:9px;padding:2px 5px;border-radius:3px;text-transform:uppercase;font-weight:600;letter-spacing:.4px;flex-shrink:0}
+.tag-combat{background:rgba(231,76,60,.15);color:#e74c3c}
+.tag-social{background:rgba(52,152,219,.15);color:#3498db}
+.tag-event{background:rgba(155,89,182,.15);color:#9b59b6}
+.tag-loc{background:rgba(139,94,60,.12);color:var(--ac)}
+.tag-mon{background:rgba(220,38,38,.12);color:#dc2626}
+.ct{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;min-width:0;position:relative}
+.tb{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--card);border-bottom:1px solid var(--bd);min-height:50px;flex-shrink:0;position:relative;z-index:2}
+.tb-b{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;border-radius:7px;color:var(--tx2);transition:all .15s;flex-shrink:0}
+.tb-b:hover{background:var(--acbg);color:var(--ac)}
+.tb-b.on{background:var(--ac);color:#fff}
+.tb-t{flex:1;font-family:'Alegreya',serif;font-size:16px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;min-height:36px;white-space:nowrap;transition:all .15s}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:var(--ach)}
+.btn-s{background:var(--acbg);color:var(--ac)}.btn-s:hover{background:#ecdcc8}
+.btn-d{background:#fde8e5;color:var(--dg)}.btn-d:hover{background:#f9d0cb}
+.btn-sm{padding:5px 8px;font-size:11px;min-height:28px}
+.btn-g{background:none;color:var(--tx2)}.btn-g:hover{background:rgba(0,0,0,.04)}
+.ct-sc{flex:1;overflow-y:auto;padding:20px}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px;color:var(--tx2)}
+.welcome h2{font-family:'Alegreya',serif;font-size:26px;color:var(--tx);margin-bottom:10px}
+.welcome p{font-size:15px;max-width:380px;line-height:1.6;margin-bottom:20px}
+.det{max-width:780px}
+.det-tp{font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:600;color:var(--ac);margin-bottom:6px}
+.det-nm{font-family:'Alegreya',serif;font-size:26px;font-weight:700;color:var(--tx);border:none;border-bottom:2px solid transparent;background:none;width:100%;padding:3px 0;outline:none}
+.det-nm:focus{border-bottom-color:var(--ac)}
+.fld{margin-top:16px}
+.fld-l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:5px}
+.fld-ta{width:100%;min-height:120px;padding:10px 12px;border:1px solid var(--bd);border-radius:7px;background:var(--inp);font-family:inherit;font-size:14px;line-height:1.6;color:var(--tx);resize:vertical;outline:none}
+.fld-ta:focus{border-color:var(--ac)}
+.fld-sel{padding:7px 10px;border:1px solid var(--bd);border-radius:7px;background:var(--inp);font-size:13px;color:var(--tx);outline:none;font-family:inherit}
+.fld-sel:focus{border-color:var(--ac)}
+.fld-in{padding:7px 10px;border:1px solid var(--bd);border-radius:7px;background:var(--inp);font-size:13px;color:var(--tx);outline:none;font-family:inherit;width:100%}
+.fld-in:focus{border-color:var(--ac)}
+.det-act{display:flex;gap:7px;margin-top:20px;padding-top:16px;border-top:1px solid var(--bdl);flex-wrap:wrap}
+.sg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px}
+.sb2{background:var(--inp);border:1px solid var(--bd);border-radius:6px;padding:6px;text-align:center}
+.sb2 label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--tx2);margin-bottom:2px}
+.sb2 input{width:100%;text-align:center;border:none;background:none;font-size:15px;font-weight:600;color:var(--tx);outline:none;font-family:inherit}
+.sr{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.sm{background:var(--inp);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;display:flex;align-items:center;gap:5px}
+.sm label{font-size:10px;font-weight:600;color:var(--tx2);white-space:nowrap}
+.sm input{width:50px;border:none;background:none;font-size:13px;font-weight:500;color:var(--tx);outline:none;font-family:inherit}
+.nr{display:flex;align-items:flex-start;gap:7px;padding:5px 0}
+.nr .bul{width:5px;height:5px;border-radius:50%;background:var(--ac);margin-top:9px;flex-shrink:0}
+.nr input{flex:1;border:none;border-bottom:1px solid var(--bdl);background:none;font-size:14px;font-family:inherit;color:var(--tx);padding:3px 0;outline:none}
+.nr input:focus{border-bottom-color:var(--ac)}
+.anr{display:flex;gap:7px;margin-top:10px;align-items:center}
+.anr input{flex:1;padding:9px 10px;border:1px dashed var(--bd);border-radius:7px;background:var(--inp);font-size:13px;font-family:inherit;color:var(--tx);outline:none}
+.anr input:focus{border-color:var(--ac);border-style:solid}
+.pk{position:relative;margin-top:4px}
+.pk-in{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:7px;background:var(--inp);font-size:13px;color:var(--tx);outline:none;font-family:inherit}
+.pk-in:focus{border-color:var(--ac)}
+.pk-dd{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--bd);border-top:none;border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.pk-op{padding:8px 12px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:background .1s}
+.pk-op:hover{background:var(--acbg)}
+.pk-op .po-n{flex:1}
+.pk-op .po-t{font-size:10px;color:var(--tx2);text-transform:uppercase}
+.pk-em{padding:10px 12px;color:var(--tx2);font-size:12px;font-style:italic}
+.pk-cur{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--acbg);border-radius:6px;margin-top:4px}
+.pk-cur .pc-n{flex:1;font-size:13px;color:var(--ac);cursor:pointer}
+.pk-cur .pc-n:hover{text-decoration:underline}
+.pk-cur .pc-x{background:none;border:none;cursor:pointer;color:var(--tx2);padding:2px;display:flex}
+.pk-cur .pc-x:hover{color:var(--dg)}
+.ch-ls{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.ch{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--acbg);border-radius:5px;font-size:12px;color:var(--ac)}
+.ch .cn{cursor:pointer}.ch .cn:hover{text-decoration:underline}
+.ch .cx{background:none;border:none;cursor:pointer;color:var(--tx2);padding:0;display:flex;font-size:10px}.ch .cx:hover{color:var(--dg)}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.mo-bx{background:var(--card);border-radius:14px;width:100%;max-width:620px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.2)}
+.mo-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.mo-hd h2{font-family:'Alegreya',serif;font-size:20px;font-weight:700}
+.mo-bd{padding:20px;overflow-y:auto;flex:1}
+.mo-ft{padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:7px}
+.imp-ta{width:100%;min-height:160px;padding:10px;border:1px solid var(--bd);border-radius:7px;font-family:monospace;font-size:12px;resize:vertical;outline:none;background:var(--inp);color:var(--tx)}
+.imp-ta:focus{border-color:var(--ac)}
+.f-dr{border:2px dashed var(--bd);border-radius:10px;padding:24px;text-align:center;color:var(--tx2);cursor:pointer;margin-bottom:12px}
+.f-dr:hover{border-color:var(--ac);background:var(--acbg)}
+.or-d{text-align:center;font-size:11px;color:var(--tx2);margin:12px 0;text-transform:uppercase;letter-spacing:.8px}
+.exp-pre{padding:12px 16px;background:var(--inp);border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.5;color:var(--tx2)}
+.exp-pre strong{color:var(--tx)}
+.exp-fn{display:flex;gap:8px;align-items:center}
+.exp-fn input{flex:1;padding:9px 12px;border:1px solid var(--bd);border-radius:7px;font-size:14px;font-family:inherit;color:var(--tx);outline:none;background:var(--inp)}
+.exp-fn input:focus{border-color:var(--ac)}
+.exp-fn .ext{font-size:14px;color:var(--tx2);font-weight:500}
+.err{color:var(--dg);font-size:12px;margin-top:7px;padding:7px 10px;background:#fde8e5;border-radius:5px}
+.okmsg{color:var(--ok);font-size:12px;margin-top:7px;padding:7px 10px;background:#e8f8ef;border-radius:5px}
+.sg-l{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--txs);opacity:.5;padding:7px 14px 3px}
+.mg-sum{padding:10px 14px;background:var(--acbg);border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.mg-sum strong{color:var(--ac)}
+.mg-sec{margin-bottom:12px}
+.mg-sec-t{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:6px;padding-top:8px;border-top:1px solid var(--bdl)}
+.mg-it{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;margin-bottom:3px;font-size:13px}
+.mg-it.match{background:#fff8e6}
+.mg-it.new-it{background:#f0fdf4}
+.mg-it label{flex:1;cursor:pointer;display:flex;align-items:center;gap:6px}
+.mg-it input[type="checkbox"]{width:16px;height:16px;accent-color:var(--ac);cursor:pointer;flex-shrink:0}
+.mg-mb{font-size:10px;padding:1px 6px;border-radius:3px;background:#fbbf24;color:#78350f;font-weight:600}
+.mg-nb{font-size:10px;padding:1px 6px;border-radius:3px;background:#86efac;color:#14532d;font-weight:600}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:500;z-index:200;animation:sUp .3s ease;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.toast-ok{background:var(--ok);color:#fff}
+.toast-err{background:var(--dg);color:#fff}
+@keyframes sUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.st-ct{position:absolute;top:50px;left:0;right:0;bottom:0;display:flex;overflow:hidden}
+.st-w{flex:1;position:relative;overflow:hidden;background:#1b1b2f;cursor:grab}
+.st-w.pan{cursor:grabbing}
+.st-cv{position:absolute;top:0;left:0;transform-origin:0 0}
+.sn-nd{position:absolute;width:210px;min-height:70px;border-radius:10px;padding:11px 12px;cursor:grab;user-select:none;border-width:2px;border-style:solid;display:flex;flex-direction:column;gap:3px;touch-action:none;color:#1e1e2e}
+.sn-nd:hover{box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.sn-nd.sel{box-shadow:0 0 0 3px rgba(196,154,108,.5)}
+.sn-ti{font-family:'Alegreya',serif;font-size:14px;font-weight:700;line-height:1.3}
+.sn-tp{font-size:9px;text-transform:uppercase;letter-spacing:.7px;font-weight:600;opacity:.65}
+.sn-ds{font-size:11px;line-height:1.3;opacity:.7;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sn-dt{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;border:2px solid #1b1b2f}
+.sn-pt{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);cursor:crosshair;z-index:5;transition:all .15s;opacity:0}
+.sn-nd:hover .sn-pt,.sn-nd.sel .sn-pt{opacity:1}
+.sn-pt:hover{background:rgba(196,154,108,.6);border-color:rgba(196,154,108,.9);transform:scale(1.3)}
+.sn-pt.pt-t{top:-7px;left:50%;margin-left:-7px}
+.sn-pt.pt-b{bottom:-7px;left:50%;margin-left:-7px}
+.sn-pt.pt-l{left:-7px;top:50%;margin-top:-7px}
+.sn-pt.pt-r{right:-7px;top:50%;margin-top:-7px}
+.sn-pt.pact{opacity:1;background:rgba(196,154,108,.6);border-color:#c49a6c}
+.st-tb{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;background:rgba(27,27,47,.92);padding:7px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.08);z-index:5}
+.st-tb button{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);cursor:pointer}
+.st-tb button:hover{background:rgba(255,255,255,.14);color:#fff}
+.st-tb .sep{width:1px;background:rgba(255,255,255,.1);margin:2px 3px}
+.st-em{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.35);text-align:center;gap:10px;padding:40px}
+.st-em h3{font-family:'Alegreya',serif;font-size:22px;color:rgba(255,255,255,.55)}
+.insp{width:260px;min-width:260px;background:#16162a;border-left:1px solid rgba(255,255,255,.08);padding:14px;overflow-y:auto;color:#ddd;display:flex;flex-direction:column;gap:10px}
+.insp-hd{display:flex;justify-content:space-between;align-items:center}
+.insp-l{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);font-weight:600;display:block;margin-bottom:3px}
+.insp input,.insp select,.insp textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:7px 9px;font-size:13px;outline:none;font-family:inherit;width:100%}
+.insp select option{background:#1e1e3a;color:#fff}
+.insp textarea{min-height:70px;resize:vertical;font-size:12px;line-height:1.5}
+.insp input:focus,.insp select:focus,.insp textarea:focus{border-color:rgba(196,154,108,.5)}
+.edge-del{cursor:pointer;pointer-events:all}
+.edge-del:hover circle{fill:#c0392b}
+@media(max-width:768px){.insp{width:200px;min-width:200px}}
+/* ═══ Rich Encounter Sections ═══ */
+.enc-box{margin-top:16px;padding:14px 16px;border-radius:9px;background:linear-gradient(135deg,#fdf6e3,#f5eed8);border:1px solid #e0d5b7;position:relative}
+.enc-box-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#8b7355;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.enc-box p{font-family:'Alegreya',serif;font-style:italic;font-size:15px;line-height:1.7;color:#4a3f2f;margin:0;white-space:pre-wrap}
+.enc-dm{margin-top:16px;border-radius:9px;border:1px solid var(--bd);overflow:hidden}
+.enc-dm-h{display:flex;align-items:center;gap:6px;padding:10px 14px;cursor:pointer;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);background:var(--inp);user-select:none}
+.enc-dm-h:hover{background:#f0ede6}
+.enc-dm-h .ar2{transition:transform .2s;display:inline-flex}.enc-dm-h.open .ar2{transform:rotate(90deg)}
+.enc-dm-bd{padding:12px 16px;background:#faf9f6;border-top:1px solid var(--bdl);font-size:14px;line-height:1.6;color:var(--tx);white-space:pre-wrap}
+.enc-ph{margin-top:16px}
+.enc-ph-l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:8px}
+.enc-ph-s{counter-reset:phase}
+.enc-ph-it{counter-increment:phase;margin-bottom:10px;padding:10px 14px;border-left:3px solid var(--ac);background:var(--inp);border-radius:0 8px 8px 0;position:relative}
+.enc-ph-it::before{content:counter(phase);position:absolute;left:-16px;top:8px;width:28px;height:28px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.enc-ph-it .ph-lbl{font-weight:600;font-size:14px;color:var(--tx);margin-left:18px}
+.enc-ph-it .ph-trg{font-size:11px;color:var(--ac);margin-left:18px;margin-top:2px;font-weight:500}
+.enc-ph-it .ph-dsc{font-size:13px;line-height:1.5;color:var(--tx);margin-top:6px;margin-left:18px;white-space:pre-wrap}
+.enc-ck{margin-top:16px}
+.enc-ck-l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:8px}
+.enc-ck-r{display:flex;flex-wrap:wrap;gap:6px}
+.dc-ch{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:var(--acbg);border:1px solid #e0d0be;font-size:12px;font-weight:500;color:var(--ac);position:relative;cursor:default}
+.dc-ch .dc-v{font-weight:700;color:#6b3a1f}
+.dc-ch .dc-eye{opacity:.6;font-size:10px}
+.dc-ch .dc-nt{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:400;white-space:nowrap;z-index:10;margin-bottom:4px;max-width:260px;white-space:normal;line-height:1.4}
+.dc-ch:hover .dc-nt{display:block}
+.enc-tr{margin-top:16px;padding:12px 14px;background:var(--inp);border-radius:9px;border:1px solid var(--bd)}
+.enc-tr-l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.enc-tr-coins{font-size:13px;color:var(--tx);margin-bottom:4px}
+.enc-tr-coins span{font-weight:600;color:var(--ac);margin-right:8px}
+.enc-tr-it{font-size:13px;color:var(--tx);padding:2px 0;display:flex;gap:6px}
+.enc-tr-it .tri-q{font-weight:600;color:var(--ac);min-width:20px}
+.enc-tr-it .tri-n{flex:1}
+.enc-tr-it .tri-v{color:var(--tx2);font-size:12px}
+.enc-tr-nt{font-size:12px;color:var(--tx2);margin-top:6px;font-style:italic}
+.enc-trap{margin-top:10px;padding:10px 14px;border-radius:8px;background:#fff8f0;border:1px solid #e8d5c0}
+.enc-trap-nm{font-weight:700;font-size:14px;color:#8b4513;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.enc-trap-mg{font-size:9px;padding:2px 6px;border-radius:3px;background:#e8d0ff;color:#6b21a8;font-weight:600;text-transform:uppercase}
+.enc-trap-rw{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--tx);margin-top:4px}
+.enc-trap-rw strong{color:var(--tx2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.enc-trap-fx{font-size:13px;color:var(--tx);margin-top:6px;padding:6px 10px;background:rgba(231,76,60,.06);border-radius:6px;border-left:3px solid #e74c3c}
+/* ═══ Party Dashboard ═══ */
+.pty-wrap{flex:1;overflow-y:auto;padding:20px}
+.pty-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.pty-hd h2{font-family:'Alegreya',serif;font-size:22px;font-weight:700;color:var(--tx)}
+.pty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.pc-card{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.pc-top{padding:12px 14px;border-bottom:1px solid var(--bdl);display:flex;align-items:center;gap:10px}
+.pc-av{width:40px;height:40px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Alegreya',serif;font-size:18px;font-weight:700;flex-shrink:0}
+.pc-id{flex:1;min-width:0}
+.pc-id .pc-nm{font-family:'Alegreya',serif;font-size:16px;font-weight:700;color:var(--tx)}
+.pc-id .pc-cl{font-size:12px;color:var(--tx2)}
+.pc-id .pc-pl{font-size:11px;color:var(--tx2);opacity:.7}
+.pc-hp{padding:8px 14px;border-bottom:1px solid var(--bdl)}
+.pc-hp-r{display:flex;align-items:center;gap:8px}
+.pc-hp-r label{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx2);width:22px}
+.pc-hp-bar{flex:1;height:10px;background:#eee;border-radius:5px;overflow:hidden}
+.pc-hp-fill{height:100%;border-radius:5px;transition:width .3s,background .3s}
+.pc-hp-r .pc-hp-v{font-size:13px;font-weight:600;min-width:55px;text-align:right}
+.pc-hp-in{width:40px;text-align:center;border:1px solid var(--bd);border-radius:4px;font-size:13px;font-weight:600;padding:1px 2px;font-family:inherit;color:var(--tx);outline:none}
+.pc-hp-in:focus{border-color:var(--ac)}
+.pc-qs{padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--bdl)}
+.pc-q{background:var(--inp);border:1px solid var(--bdl);border-radius:6px;padding:4px 8px;text-align:center;min-width:52px}
+.pc-q label{display:block;font-size:9px;font-weight:600;text-transform:uppercase;color:var(--tx2);letter-spacing:.3px}
+.pc-q .qv{font-size:15px;font-weight:700;color:var(--tx)}
+.pc-q .qv-sm{font-size:12px;font-weight:600;color:var(--tx)}
+.pc-abs{padding:8px 14px;border-bottom:1px solid var(--bdl)}
+.pc-abs .sg{grid-template-columns:repeat(6,1fr);gap:4px}
+.pc-abs .sb2{padding:4px;border:1px solid var(--bdl)}
+.pc-abs .sb2 label{font-size:8px}
+.pc-abs .sb2 input{font-size:13px}
+.pc-svs{padding:6px 14px;display:flex;gap:4px;border-bottom:1px solid var(--bdl)}
+.pc-sk{padding:8px 14px;border-bottom:1px solid var(--bdl)}
+.pc-sk-l{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx2);margin-bottom:4px}
+.pc-sk-r{display:flex;flex-wrap:wrap;gap:4px}
+.pc-sk-ch{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;background:var(--acbg);border-radius:4px;font-size:11px;color:var(--ac);font-weight:500}
+.pc-sp{padding:8px 14px;border-bottom:1px solid var(--bdl)}
+.pc-sp-l{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx2);margin-bottom:4px}
+.pc-sp-r{display:flex;gap:8px;flex-wrap:wrap}
+.pc-sp-lv{font-size:12px;color:var(--tx)}
+.pc-sp-lv strong{color:var(--ac)}
+.pc-bt{padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px}
+.pc-nt{padding:8px 14px;border-top:1px solid var(--bdl)}
+.pc-nt textarea{width:100%;min-height:50px;padding:6px 8px;border:1px solid var(--bdl);border-radius:6px;font-size:12px;line-height:1.4;font-family:inherit;color:var(--tx);background:var(--inp);resize:vertical;outline:none}
+.pc-nt textarea:focus{border-color:var(--ac)}
+.pc-edit{display:flex;gap:4px;flex-shrink:0}
+.pc-edit button{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:none;border-radius:6px;cursor:pointer;background:var(--acbg);color:var(--ac)}
+.pc-edit button:hover{background:#ecdcc8}
+.pc-edit .del{background:#fde8e5;color:var(--dg)}
+.pc-edit .del:hover{background:#f9d0cb}
+.pc-edt{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.pc-edt .pc-row{display:flex;gap:6px;align-items:center}
+.pc-edt .pc-row label{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx2);width:50px;flex-shrink:0}
+.pc-edt .pc-row input{flex:1;padding:5px 8px;border:1px solid var(--bd);border-radius:5px;font-size:13px;font-family:inherit;color:var(--tx);outline:none;background:var(--inp)}
+.pc-edt .pc-row input:focus{border-color:var(--ac)}
+/* ═══ Combat Panel (side drawer) ═══ */
+.cbt-panel{position:fixed;right:0;top:0;bottom:0;width:360px;background:var(--card);border-left:1px solid var(--bd);box-shadow:-4px 0 24px rgba(0,0,0,.1);z-index:20;display:flex;flex-direction:column;transition:transform .25s ease;overflow:hidden}
+.cbt-panel.closed{transform:translateX(100%)}
+.cbt-hd{padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.cbt-hd h3{font-family:'Alegreya',serif;font-size:16px;font-weight:700;color:var(--tx);flex:1}
+.cbt-bd{flex:1;overflow-y:auto;padding:12px 14px}
+.cbt-rnd{display:flex;align-items:center;gap:6px;margin-bottom:10px;padding:6px 10px;background:var(--inp);border-radius:8px;border:1px solid var(--bdl)}
+.cbt-rnd .rnd-l{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx2);letter-spacing:.5px}
+.cbt-rnd .rnd-v{font-size:22px;font-weight:700;color:var(--ac);font-family:'Alegreya',serif;min-width:24px;text-align:center}
+.cbt-rnd button{width:24px;height:24px;border:none;border-radius:4px;background:var(--acbg);color:var(--ac);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.cbt-rnd button:hover{background:#ecdcc8}
+.init-pty{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.init-pty-btn{padding:3px 8px;border:1px solid var(--bd);border-radius:16px;background:var(--inp);font-size:10px;font-family:inherit;color:var(--ac);cursor:pointer;font-weight:500}
+.init-pty-btn:hover{background:var(--acbg);border-color:var(--ac)}
+.init-add{display:flex;gap:4px;margin-bottom:8px}
+.init-add input{flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-family:inherit;color:var(--tx);outline:none;background:var(--inp)}
+.init-add input:focus{border-color:var(--ac)}
+.init-add .init-num{width:45px;text-align:center}
+.init-list{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.init-it{display:flex;align-items:center;gap:4px;padding:6px 8px;background:var(--inp);border:1px solid var(--bdl);border-radius:6px;transition:all .15s;cursor:grab;touch-action:none}
+.init-it.active{background:var(--acbg);border-color:var(--ac);box-shadow:0 1px 6px rgba(139,94,60,.12)}
+.init-it.active .it-nm{color:var(--ac);font-weight:700}
+.init-it.dragging{opacity:.5;transform:scale(.97)}
+.init-it .it-pos{width:18px;font-size:11px;font-weight:700;color:var(--tx2);text-align:center;flex-shrink:0}
+.init-it .it-nm{flex:1;font-size:13px;color:var(--tx);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.init-it .it-ini{font-size:12px;font-weight:700;color:var(--ac);min-width:20px;text-align:center}
+.init-it .it-act{display:flex;gap:1px}
+.init-it .it-act button{width:22px;height:22px;border:none;border-radius:3px;background:none;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.init-it .it-act button:hover{background:var(--acbg);color:var(--ac)}
+.init-it .it-act .del:hover{background:#fde8e5;color:var(--dg)}
+.init-nxt{display:flex;gap:6px;margin-bottom:10px}
+.init-nxt button{flex:1}
+.cbt-div{height:1px;background:var(--bd);margin:10px 0}
+.fx-hd{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);margin-bottom:6px}
+.fx-add{display:flex;gap:4px;margin-bottom:6px}
+.fx-add input{flex:1;padding:5px 8px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-family:inherit;color:var(--tx);outline:none;background:var(--inp)}
+.fx-add input:focus{border-color:var(--ac)}
+.fx-add .fx-dur{width:40px;text-align:center}
+.fx-list{display:flex;flex-direction:column;gap:3px}
+.fx-it{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--inp);border:1px solid var(--bdl);border-radius:6px}
+.fx-it.expiring{background:#fef3c7;border-color:#f59e0b;animation:fxPulse 1s ease infinite}
+.fx-it.expired{background:#fde8e5;border-color:var(--dg);opacity:.6}
+@keyframes fxPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.3)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
+.fx-it .fx-nm{flex:1;font-size:12px;font-weight:500;color:var(--tx)}
+.fx-it .fx-dur-v{font-size:13px;font-weight:700;min-width:20px;text-align:center}
+.fx-it .fx-dur-v.warn{color:#d97706}
+.fx-it .fx-dur-v.gone{color:var(--dg)}
+.fx-it .fx-nt{font-size:10px;color:var(--tx2)}
+.fx-it button{width:20px;height:20px;border:none;border-radius:3px;background:none;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fx-it button:hover{background:#fde8e5;color:var(--dg)}
+.cbt-toggle{position:relative}
+.cbt-badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--ac)}
+@media(max-width:600px){.cbt-panel{width:300px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+var useState=React.useState, useEffect=React.useEffect, useCallback=React.useCallback, useRef=React.useRef, useMemo=React.useMemo;
+
+/* ═══ Storage ═══ */
+var SK={meta:"dmtk3:meta",locations:"dmtk3:locations",npcs:"dmtk3:npcs",encounters:"dmtk3:encounters",monsters:"dmtk3:monsters",factions:"dmtk3:factions",sessions:"dmtk3:sessions",party:"dmtk3:party",storyNodes:"dmtk3:storyNodes",storyEdges:"dmtk3:storyEdges"};
+function sGet(k){try{var r=localStorage.getItem(SK[k]);return r?JSON.parse(r):null}catch(e){return null}}
+function sSave(k,v){try{localStorage.setItem(SK[k],JSON.stringify(v))}catch(e){console.error(e)}}
+function loadAll(){var d={};Object.keys(SK).forEach(function(k){d[k]=sGet(k)});return d}
+function saveAll(d){Object.keys(SK).forEach(function(k){if(d[k]!==undefined)sSave(k,d[k])})}
+function getExportData(){var r=loadAll();return{campaign:(r.meta&&r.meta.campaign)||"Campaign",locations:r.locations||[],npcs:r.npcs||[],encounters:r.encounters||[],monsters:r.monsters||[],factions:r.factions||[],sessions:r.sessions||[],party:r.party||[],storyNodes:r.storyNodes||[],storyEdges:r.storyEdges||[]}}
+function doExport(filename){
+  var d=getExportData();var j=JSON.stringify(d,null,2);var b=new Blob([j],{type:"application/json"});
+  var fn=filename||d.campaign.replace(/[^a-zA-Z0-9]/g,"_")+"_"+new Date().toISOString().split("T")[0];
+  if(!fn.endsWith(".json"))fn=fn+".json";
+  if(window.showSaveFilePicker){
+    window.showSaveFilePicker({suggestedName:fn,types:[{description:"JSON",accept:{"application/json":[".json"]}}]}).then(function(handle){return handle.createWritable().then(function(wr){return wr.write(b).then(function(){return wr.close()})})}).catch(function(e){if(e.name!=="AbortError"){var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u)}});
+  }else{
+    var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+  }
+}
+
+/* ═══ Helpers ═══ */
+function gid(p){return p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,6)}
+function buildTree(locs){if(!locs||!locs.length)return[];var m={};locs.forEach(function(l){m[l.id]=Object.assign({},l,{children:[]})});var r=[];locs.forEach(function(l){if(l.parent&&m[l.parent])m[l.parent].children.push(m[l.id]);else r.push(m[l.id])});return r}
+function ensureIn(a,id){if(!a)return[id];if(a.indexOf(id)>=0)return a;return a.concat([id])}
+var ENC_T=["combat","social","event"];
+var LOC_T=["city","ward","neighborhood","building","room","wilderness","other"];
+var ND_ST=["upcoming","current","completed","skipped"];
+var ABILS=["STR","DEX","CON","INT","WIS","CHA"];
+var SAVS=["Fort","Ref","Will"];
+var NPC_ST=[{k:"hp",l:"HP"},{k:"ac",l:"AC"},{k:"bab",l:"BAB"},{k:"init",l:"Init"},{k:"speed",l:"Spd"},{k:"cr",l:"CR"}];
+var NC={upcoming:"#64748b",current:"#d97706",completed:"#16a34a",skipped:"#9ca3af"};
+var NBG={upcoming:"#f1f5f9",current:"#fffbeb",completed:"#f0fdf4",skipped:"#f9fafb"};
+var NBD={upcoming:"#cbd5e1",current:"#fbbf24",completed:"#86efac",skipped:"#d1d5db"};
+var NODE_W=210,NODE_H=80;
+
+/* Status tracking */
+var ST_LOC=["unvisited","visited","cleared"];
+var ST_NPC=["alive","dead","hostile","friendly","unknown"];
+var ST_ENC=["upcoming","active","completed","skipped"];
+var ST_MON=["alive","dead"];
+var ST_MAP={locations:ST_LOC,npcs:ST_NPC,encounters:ST_ENC,monsters:ST_MON};
+var ST_COL={unvisited:"#94a3b8",visited:"#3b82f6",cleared:"#16a34a",alive:"#16a34a",dead:"#dc2626",hostile:"#dc2626",friendly:"#3b82f6",unknown:"#94a3b8",upcoming:"#94a3b8",active:"#d97706",completed:"#16a34a",skipped:"#9ca3af"};
+var ST_DIM={cleared:true,dead:true,completed:true,skipped:true};
+function stDef(type){if(type==="locations")return"unvisited";if(type==="npcs")return"alive";if(type==="encounters")return"upcoming";if(type==="monsters")return"alive";return null}
+
+/* ═══ Entity Templates ═══ */
+function tmpl(type,name){
+  var n=name||"New "+type.slice(0,1).toUpperCase()+type.slice(1,-1);
+  if(type==="locations")return{id:gid("loc"),name:n,type:"other",parent:null,description:"",npcs:[],encounters:[],factions:[],monsters:[]};
+  if(type==="npcs")return{id:gid("npc"),name:n,locations:[],factions:[],related_npcs:[],encounters:[],description:"",stats:{abilities:["","","","","",""],hp:"",ac:"",bab:"",init:"",speed:"",cr:"",saves:["","",""]}};
+  if(type==="encounters")return{id:gid("enc"),name:n,type:"combat",locations:[],description:"",npcs:[],monsters:[],factions:[]};
+  if(type==="monsters")return{id:gid("mon"),name:n,description:"",locations:[],encounters:[],stats:{size:"",type:"",subtypes:"",cr:"",hd:"",hp:"",ac:"",ac_touch:"",ac_flat:"",init:"",bab:"",speed:"",fly:"",swim:"",climb:"",burrow:"",abilities:["","","","","",""],saves:["","",""],attacks:"",full_attack:"",damage:"",special_attacks:"",special_qualities:""}};
+  if(type==="factions")return{id:gid("fac"),name:n,description:"",npcs:[],locations:[],encounters:[]};
+  return null;
+}
+var TYPES=["locations","npcs","encounters","monsters","factions"];
+var TYPE_LABELS={locations:"Location",npcs:"NPC",encounters:"Encounter",monsters:"Monster",factions:"Faction",storyNodes:"Story Node"};
+
+/* ═══ Icons ═══ */
+function ISearch(){return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>}
+function ILoc(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>}
+function INpc(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>}
+function IEnc(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>}
+function IMon(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 13c0 2 1 4 3 5l1 2h4l1-2c2-1 3-3 3-5"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/><path d="M8 6c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M4 10c-1 0-2-.5-2-2s1-2 2-2"/><path d="M20 10c1 0 2-.5 2-2s-1-2-2-2"/></svg>}
+function IFac(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
+function IDoc(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>}
+function IGr(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="5" cy="6" r="3"/><circle cx="19" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M7.5 8 11 15.5"/><path d="M16.5 8 13 15.5"/></svg>}
+function IChev(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>}
+function IPlus(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>}
+function ISave(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>}
+function IUp(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
+function IDn(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>}
+function IMenu(){return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
+function IX(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+function ITr(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>}
+function IZI(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>}
+function IZO(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="8" y1="11" x2="14" y2="11"/></svg>}
+function IFit(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>}
+function IPty(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
+function IInit(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
+function IUp2(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15"/></svg>}
+function IDn2(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>}
+function IPlay(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>}
+function iFor(t){if(t==="locations")return <ILoc/>;if(t==="npcs")return <INpc/>;if(t==="encounters")return <IEnc/>;if(t==="monsters")return <IMon/>;if(t==="factions")return <IFac/>;return <IDoc/>}
+
+/* ═══ Toast ═══ */
+function Toast(p){useEffect(function(){var t=setTimeout(p.onDone,2200);return function(){clearTimeout(t)}},[p.onDone]);return <div className={"toast toast-"+p.type}>{p.msg}</div>}
+
+/* ═══ SearchPicker (single) ═══ */
+function SPick(p){
+  var _q=useState("");var q=_q[0];var sQ=_q[1];
+  var _o=useState(false);var o=_o[0];var sO=_o[1];
+  var wr=useRef(null);
+  var ql=q.trim().toLowerCase();
+  var fl=ql.length>0?p.items.filter(function(i){return i.id!==p.currentId&&i.name&&i.name.toLowerCase().indexOf(ql)>=0}).slice(0,6):[];
+  var cur=p.currentId?p.items.find(function(i){return i.id===p.currentId}):null;
+  useEffect(function(){function h(e){if(wr.current&&!wr.current.contains(e.target))sO(false)}document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
+  return(<div className="fld"><div className="fld-l">{p.label}</div>
+    {cur&&<div className="pk-cur">{p.icon}<span className="pc-n" onClick={function(){if(p.onNav)p.onNav(cur.id)}}>{cur.name}</span><button className="pc-x" onClick={function(){p.onClear()}}><IX/></button></div>}
+    <div className="pk" ref={wr}><input className="pk-in" placeholder={cur?"Change...":"Search to link..."} value={q} onChange={function(e){sQ(e.target.value);sO(true)}} onFocus={function(){if(ql.length>0)sO(true)}}/>
+    {o&&fl.length>0&&<div className="pk-dd">{fl.map(function(i){return <div key={i.id} className="pk-op" onClick={function(){p.onPick(i.id);sQ("");sO(false)}}>{p.icon}<span className="po-n">{i.name}</span>{i.type&&<span className="po-t">{i.type}</span>}</div>})}</div>}
+    {o&&ql.length>0&&fl.length===0&&<div className="pk-dd"><div className="pk-em">No matches</div></div>}
+    </div></div>);
+}
+
+/* ═══ MultiPicker ═══ */
+function MPick(p){
+  var _q=useState("");var q=_q[0];var sQ=_q[1];
+  var _o=useState(false);var o=_o[0];var sO=_o[1];
+  var wr=useRef(null);
+  var sl=p.linkedIds||[];
+  var ql=q.trim().toLowerCase();
+  var fl=ql.length>0?p.items.filter(function(i){return sl.indexOf(i.id)<0&&i.name&&i.name.toLowerCase().indexOf(ql)>=0}).slice(0,6):[];
+  var exact=ql.length>0&&p.items.some(function(i){return i.name&&i.name.toLowerCase()===ql});
+  var linked=sl.map(function(id){return p.items.find(function(i){return i.id===id})}).filter(Boolean);
+  useEffect(function(){function h(e){if(wr.current&&!wr.current.contains(e.target))sO(false)}document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
+  function hCreate(){if(!p.onCreate||!q.trim())return;var nid=p.onCreate(q.trim());if(nid){p.onAdd(nid);sQ("");sO(false)}}
+  return(<div className="fld"><div className="fld-l">{p.label}</div>
+    {linked.length>0&&<div className="ch-ls">{linked.map(function(i){return <div key={i.id} className="ch">{p.icon}<span className="cn" onClick={function(){if(p.onNav)p.onNav(i.id)}}>{i.name}</span><button className="cx" onClick={function(){p.onRemove(i.id)}}><IX/></button></div>})}</div>}
+    <div className="pk" ref={wr}><input className="pk-in" placeholder="Search to add..." value={q} onChange={function(e){sQ(e.target.value);sO(true)}} onFocus={function(){if(ql.length>0)sO(true)}}/>
+    {o&&ql.length>0&&<div className="pk-dd">
+      {fl.map(function(i){return <div key={i.id} className="pk-op" onClick={function(){p.onAdd(i.id);sQ("");sO(false)}}>{p.icon}<span className="po-n">{i.name}</span>{i.type&&<span className="po-t">{i.type}</span>}</div>})}
+      {!exact&&p.onCreate&&ql.length>0&&<div className="pk-op" style={{borderTop:fl.length>0?"1px solid var(--bdl)":"none",color:"var(--ac)",fontWeight:500}} onClick={hCreate}><IPlus/><span className="po-n">Create "{q.trim()}"</span></div>}
+      {fl.length===0&&!p.onCreate&&<div className="pk-em">No matches</div>}
+    </div>}
+    </div></div>);
+}
+
+/* ═══ Tree Item ═══ */
+function TrIt(p){
+  var has=p.node.children&&p.node.children.length>0;
+  var ex=p.exp[p.node.id];
+  var st=p.node.status||"unvisited";
+  if(p.filter&&ST_DIM[st])return null;
+  return(<>
+    <div className={"sb-it tree-it"+(p.selId===p.node.id?" act":"")+(ST_DIM[st]?" dim":"")} style={{"--d":p.depth}} onClick={function(){p.onSel("locations",p.node.id)}}>
+      <div className={"tr-ar"+(ex?" exp":"")+(has?"":" hid")} onClick={function(e){e.stopPropagation();if(has)p.onTog(p.node.id)}}><IChev/></div>
+      <div className="st-dot" style={{background:ST_COL[st]||"#94a3b8"}}/>
+      <span className="ic"><ILoc/></span><span className="nm">{p.node.name}</span>
+      {p.node.type&&<span className="tag tag-loc">{p.node.type}</span>}
+    </div>
+    {ex&&has&&p.node.children.map(function(c){return <TrIt key={c.id} node={c} depth={p.depth+1} selId={p.selId} onSel={p.onSel} exp={p.exp} onTog={p.onTog} filter={p.filter}/>})}
+  </>);
+}
+
+/* ═══ Location Section (collapsible) ═══ */
+function LocSec(p){
+  var _o=useState(true);var o=_o[0];var sO=_o[1];
+  return(<div className="sb-sec">
+    <div className={"sec-h"+(o?" open":"")} onClick={function(){sO(!o)}}><span className="ar"><IChev/></span><ILoc/><span>Locations</span><span className="bd">{p.locs?p.locs.length:0}</span></div>
+    {o&&<><button className="sb-add" onClick={function(){p.addEnt("locations")}}><IPlus/> Add Location</button>
+    {p.locTree.map(function(n){return <TrIt key={n.id} node={n} depth={0} selId={p.sl.type==="locations"?p.sl.id:null} onSel={p.nav} exp={p.te} onTog={function(id){p.sTe(function(o){var n=Object.assign({},o);n[id]=!n[id];return n})}} filter={p.filter}/>})}</>}
+  </div>);
+}
+
+/* ═══ Sidebar Section ═══ */
+function Sec(p){
+  var _o=useState(p.defOpen||false);var o=_o[0];var sO=_o[1];
+  var its=p.items||[];
+  if(p.filter)its=its.filter(function(i){return!ST_DIM[i.status||stDef(p.type)]});
+  return(<div className="sb-sec">
+    <div className={"sec-h"+(o?" open":"")} onClick={function(){sO(!o)}}><span className="ar"><IChev/></span>{p.icon}<span>{p.title}</span><span className="bd">{its.length}</span></div>
+    {o&&<>{p.onAdd&&<button className="sb-add" onClick={p.onAdd}><IPlus/> Add {p.title.replace(/s$/,"")}</button>}
+    {its.map(function(i){var st=i.status||stDef(p.type);return <div key={i.id} className={"sb-it"+(p.sel.type===p.type&&p.sel.id===i.id?" act":"")+(ST_DIM[st]?" dim":"")} onClick={function(){p.onSel(p.type,i.id)}}>
+      {st&&<div className="st-dot" style={{background:ST_COL[st]||"#94a3b8"}}/>}
+      <span className="ic">{iFor(p.type)}</span><span className="nm">{i.name||i.title||i.date}</span>
+      {p.type==="encounters"&&i.type&&<span className={"tag tag-"+i.type}>{i.type}</span>}
+    </div>})}</>}
+  </div>);
+}
+
+/* ═══ Entity Detail ═══ */
+function EntDet(p){
+  var _d=useState(Object.assign({},p.entity));var d=_d[0];var sD=_d[1];
+  var _dmO=useState(false);var dmO=_dmO[0];var sDmO=_dmO[1];
+  var prev=useRef(p.entity?p.entity.id:null);
+  useEffect(function(){if(p.entity&&p.entity.id!==prev.current){sD(Object.assign({},p.entity));prev.current=p.entity.id}},[p.entity]);
+  if(!p.entity)return null;
+  function u(f,v){sD(function(o){return Object.assign({},o,{[f]:v})})}
+  function uS(f,v){sD(function(o){return Object.assign({},o,{stats:Object.assign({},o.stats||{},{[f]:v})})})}
+  function uA(i,v){sD(function(o){var a=(o.stats&&o.stats.abilities)?o.stats.abilities.slice():["","","","","",""];a[i]=v;return Object.assign({},o,{stats:Object.assign({},o.stats||{},{abilities:a})})})}
+  function uSv(i,v){sD(function(o){var s=(o.stats&&o.stats.saves)?o.stats.saves.slice():["","",""];s[i]=v;return Object.assign({},o,{stats:Object.assign({},o.stats||{},{saves:s})})})}
+  function cr(type,name){return p.onCr(type,name)}
+  var tp=p.type;var da=p.data;
+  var tl=tp==="locations"?"Location"+(d.type?" — "+d.type:""):tp==="npcs"?"NPC":tp==="monsters"?"Monster"+((d.stats&&d.stats.type)?" — "+d.stats.type:""):tp==="encounters"?"Encounter"+(d.type?" — "+d.type:""):"Faction";
+
+  return(<div className="det">
+    <div className="det-tp">{tl}</div>
+    <input className="det-nm" value={d.name||""} onChange={function(e){u("name",e.target.value)}} placeholder="Name..."/>
+
+    {ST_MAP[tp]&&<div className="det-st"><label>Status</label><select value={d.status||stDef(tp)} onChange={function(e){u("status",e.target.value)}}>{ST_MAP[tp].map(function(s){return <option key={s} value={s}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>})}</select><div className="st-dot" style={{background:ST_COL[d.status||stDef(tp)]||"#94a3b8",width:10,height:10}}/></div>}
+
+    {tp==="locations"&&<div className="fld"><div className="fld-l">Type</div><select className="fld-sel" value={d.type||"other"} onChange={function(e){u("type",e.target.value)}}>{LOC_T.map(function(t){return <option key={t} value={t}>{t}</option>})}</select></div>}
+    {tp==="encounters"&&<div className="fld"><div className="fld-l">Encounter Type</div><select className="fld-sel" value={d.type||"combat"} onChange={function(e){u("type",e.target.value)}}>{ENC_T.map(function(t){return <option key={t} value={t}>{t}</option>})}</select></div>}
+
+    {/* ── Rich Encounter Sections ── */}
+    {tp==="encounters"&&d.boxed_text&&<div className="enc-box"><div className="enc-box-l">{"📖 Read Aloud"}</div><p>{d.boxed_text}</p></div>}
+
+    {tp==="encounters"&&d.dm_notes&&<div className="enc-dm"><div className={"enc-dm-h"+(dmO?" open":"")} onClick={function(){sDmO(!dmO)}}><span className="ar2"><IChev/></span>{"🔒 DM Notes"}</div>{dmO&&<div className="enc-dm-bd">{d.dm_notes}</div>}</div>}
+
+    {tp==="encounters"&&d.phases&&d.phases.length>1&&<div className="enc-ph"><div className="enc-ph-l">Encounter Phases</div><div className="enc-ph-s">{d.phases.map(function(ph,i){return <div key={i} className="enc-ph-it"><div className="ph-lbl">{ph.label}</div>{ph.trigger&&<div className="ph-trg">{ph.trigger}</div>}{ph.description&&<div className="ph-dsc">{ph.description}</div>}</div>})}</div></div>}
+
+    {tp==="encounters"&&d.checks&&d.checks.length>0&&<div className="enc-ck"><div className="enc-ck-l">Checks & Saves</div><div className="enc-ck-r">{d.checks.map(function(ck,i){return <div key={i} className="dc-ch">{ck.passive&&<span className="dc-eye">{"👁"}</span>}<span>{ck.skill}</span><span className="dc-v">DC {ck.dc}</span>{ck.note&&<div className="dc-nt">{ck.note}{ck.type&&<span style={{display:"block",marginTop:2,opacity:.7}}>({ck.type})</span>}</div>}</div>})}</div></div>}
+
+    {tp==="encounters"&&d.treasure&&(function(){var t=d.treasure;var hasCoins=t.coins&&Object.keys(t.coins).some(function(k){return t.coins[k]>0});var hasItems=t.items&&t.items.length>0;if(!hasCoins&&!hasItems&&!t.notes)return null;var coinNames={pp:"pp",gp:"gp",ep:"ep",sp:"sp",cp:"cp"};return <div className="enc-tr"><div className="enc-tr-l">{"💰 Treasure"}</div>{hasCoins&&<div className="enc-tr-coins">{Object.keys(t.coins).filter(function(k){return t.coins[k]>0}).map(function(k){return <span key={k}>{t.coins[k]} {coinNames[k]}</span>})}</div>}{hasItems&&t.items.map(function(it,i){return <div key={i} className="enc-tr-it"><span className="tri-q">{it.qty||1}x</span><span className="tri-n">{it.name}{it.type&&<span style={{fontSize:10,color:"var(--tx2)",marginLeft:4}}>({it.type})</span>}</span>{it.value&&<span className="tri-v">{it.value}</span>}</div>})}{t.notes&&<div className="enc-tr-nt">{t.notes}</div>}</div>})()}
+
+    {tp==="encounters"&&d.traps&&d.traps.length>0&&<div className="fld"><div className="fld-l">Traps</div>{d.traps.map(function(tr,i){return <div key={i} className="enc-trap"><div className="enc-trap-nm">{tr.name||"Trap"}{tr.magical&&<span className="enc-trap-mg">Magical</span>}</div><div className="enc-trap-rw">{tr.trigger&&<div><strong>Trigger: </strong>{tr.trigger}</div>}{tr.detect_skill&&<div><strong>Detect: </strong>{tr.detect_skill} DC {tr.detect_dc}</div>}{tr.disarm_skill&&<div><strong>Disarm: </strong>{tr.disarm_skill} DC {tr.disarm_dc}</div>}</div>{tr.disarm_notes&&<div style={{fontSize:12,color:"var(--tx2)",marginTop:4}}>{tr.disarm_notes}</div>}{tr.effect&&<div className="enc-trap-fx">{tr.effect}</div>}</div>})}</div>}
+
+    {/* NPC Stats */}
+    {tp==="npcs"&&<><div className="fld"><div className="fld-l">Ability Scores</div><div className="sg">{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(d.stats&&d.stats.abilities&&d.stats.abilities[i])||""} onChange={function(e){uA(i,e.target.value)}} placeholder="—"/></div>})}</div></div>
+    <div className="fld"><div className="fld-l">Combat Stats</div><div className="sr">{NPC_ST.map(function(sf){return <div key={sf.k} className="sm"><label>{sf.l}</label><input value={(d.stats&&d.stats[sf.k])||""} onChange={function(e){uS(sf.k,e.target.value)}} placeholder="—"/></div>})}</div></div>
+    <div className="fld"><div className="fld-l">Saves</div><div className="sr">{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"50px"}} value={(d.stats&&d.stats.saves&&d.stats.saves[i])||""} onChange={function(e){uSv(i,e.target.value)}} placeholder="—"/></div>})}</div></div></>}
+
+    {/* Monster Stats */}
+    {tp==="monsters"&&<>
+    <div className="fld"><div className="fld-l">Creature Info</div><div className="sr">
+      <div className="sm"><label>Size</label><input style={{width:"70px"}} value={(d.stats&&d.stats.size)||""} onChange={function(e){uS("size",e.target.value)}} placeholder="Medium"/></div>
+      <div className="sm"><label>Type</label><input style={{width:"100px"}} value={(d.stats&&d.stats.type)||""} onChange={function(e){uS("type",e.target.value)}} placeholder="Aberration"/></div>
+      <div className="sm"><label>Subtypes</label><input style={{width:"100px"}} value={(d.stats&&d.stats.subtypes)||""} onChange={function(e){uS("subtypes",e.target.value)}} placeholder=""/></div>
+      <div className="sm"><label>CR</label><input style={{width:"45px"}} value={(d.stats&&d.stats.cr)||""} onChange={function(e){uS("cr",e.target.value)}} placeholder="—"/></div>
+    </div></div>
+    <div className="fld"><div className="fld-l">Ability Scores</div><div className="sg">{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(d.stats&&d.stats.abilities&&d.stats.abilities[i])||""} onChange={function(e){uA(i,e.target.value)}} placeholder="—"/></div>})}</div></div>
+    <div className="fld"><div className="fld-l">Defenses</div><div className="sr">
+      <div className="sm"><label>HD</label><input style={{width:"65px"}} value={(d.stats&&d.stats.hd)||""} onChange={function(e){uS("hd",e.target.value)}} placeholder="4d8+8"/></div>
+      <div className="sm"><label>HP</label><input style={{width:"50px"}} value={(d.stats&&d.stats.hp)||""} onChange={function(e){uS("hp",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>AC</label><input style={{width:"45px"}} value={(d.stats&&d.stats.ac)||""} onChange={function(e){uS("ac",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>Touch</label><input style={{width:"45px"}} value={(d.stats&&d.stats.ac_touch)||""} onChange={function(e){uS("ac_touch",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>Flat</label><input style={{width:"45px"}} value={(d.stats&&d.stats.ac_flat)||""} onChange={function(e){uS("ac_flat",e.target.value)}} placeholder="—"/></div>
+    </div></div>
+    <div className="fld"><div className="fld-l">Combat</div><div className="sr">
+      <div className="sm"><label>Init</label><input style={{width:"45px"}} value={(d.stats&&d.stats.init)||""} onChange={function(e){uS("init",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>BAB</label><input style={{width:"45px"}} value={(d.stats&&d.stats.bab)||""} onChange={function(e){uS("bab",e.target.value)}} placeholder="—"/></div>
+    </div></div>
+    <div className="fld"><div className="fld-l">Attacks</div><input className="fld-in" value={(d.stats&&d.stats.attacks)||""} onChange={function(e){uS("attacks",e.target.value)}} placeholder="Claw +8 melee (1d6+4)"/></div>
+    <div className="fld"><div className="fld-l">Full Attack</div><input className="fld-in" value={(d.stats&&d.stats.full_attack)||""} onChange={function(e){uS("full_attack",e.target.value)}} placeholder="2 claws +8 melee (1d6+4), bite +3 melee (1d8+2)"/></div>
+    <div className="fld"><div className="fld-l">Damage</div><input className="fld-in" value={(d.stats&&d.stats.damage)||""} onChange={function(e){uS("damage",e.target.value)}} placeholder="Additional damage notes"/></div>
+    <div className="fld"><div className="fld-l">Speed</div><div className="sr">
+      <div className="sm"><label>Land</label><input style={{width:"55px"}} value={(d.stats&&d.stats.speed)||""} onChange={function(e){uS("speed",e.target.value)}} placeholder="30 ft"/></div>
+      <div className="sm"><label>Fly</label><input style={{width:"55px"}} value={(d.stats&&d.stats.fly)||""} onChange={function(e){uS("fly",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>Swim</label><input style={{width:"55px"}} value={(d.stats&&d.stats.swim)||""} onChange={function(e){uS("swim",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>Climb</label><input style={{width:"55px"}} value={(d.stats&&d.stats.climb)||""} onChange={function(e){uS("climb",e.target.value)}} placeholder="—"/></div>
+      <div className="sm"><label>Burrow</label><input style={{width:"55px"}} value={(d.stats&&d.stats.burrow)||""} onChange={function(e){uS("burrow",e.target.value)}} placeholder="—"/></div>
+    </div></div>
+    <div className="fld"><div className="fld-l">Saves</div><div className="sr">{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"50px"}} value={(d.stats&&d.stats.saves&&d.stats.saves[i])||""} onChange={function(e){uSv(i,e.target.value)}} placeholder="—"/></div>})}</div></div>
+    <div className="fld"><div className="fld-l">Special Attacks</div><textarea className="fld-ta" style={{minHeight:"60px"}} value={(d.stats&&d.stats.special_attacks)||""} onChange={function(e){uS("special_attacks",e.target.value)}} placeholder="Breath weapon, improved grab..."/></div>
+    <div className="fld"><div className="fld-l">Special Qualities</div><textarea className="fld-ta" style={{minHeight:"60px"}} value={(d.stats&&d.stats.special_qualities)||""} onChange={function(e){uS("special_qualities",e.target.value)}} placeholder="Darkvision 60 ft, DR 5/magic..."/></div>
+    </>}
+
+    <div className="fld"><div className="fld-l">Description</div><textarea className="fld-ta" value={d.description||""} onChange={function(e){u("description",e.target.value)}} placeholder="Description..."/></div>
+
+    {/* ── Pickers ── */}
+    {tp==="npcs"&&<MPick label="Locations" items={da.locations||[]} linkedIds={d.locations||(d.location?[d.location]:[])} onAdd={function(id){u("locations",(d.locations||(d.location?[d.location]:[])).concat([id]))}} onRemove={function(id){u("locations",(d.locations||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("locations",id)}} icon={<ILoc/>} onCreate={function(n){return cr("locations",n)}}/>}
+    {tp==="npcs"&&<MPick label="Factions" items={da.factions||[]} linkedIds={d.factions||(d.faction?[d.faction]:[])} onAdd={function(id){u("factions",(d.factions||(d.faction?[d.faction]:[])).concat([id]))}} onRemove={function(id){u("factions",(d.factions||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("factions",id)}} icon={<IFac/>} onCreate={function(n){return cr("factions",n)}}/>}
+    {tp==="npcs"&&<MPick label="Related NPCs" items={(da.npcs||[]).filter(function(n){return n.id!==d.id})} linkedIds={d.related_npcs} onAdd={function(id){u("related_npcs",(d.related_npcs||[]).concat([id]))}} onRemove={function(id){u("related_npcs",(d.related_npcs||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("npcs",id)}} icon={<INpc/>} onCreate={function(n){return cr("npcs",n)}}/>}
+    {tp==="npcs"&&<MPick label="Encounters" items={da.encounters||[]} linkedIds={d.encounters} onAdd={function(id){u("encounters",(d.encounters||[]).concat([id]))}} onRemove={function(id){u("encounters",(d.encounters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("encounters",id)}} icon={<IEnc/>} onCreate={function(n){return cr("encounters",n)}}/>}
+
+    {tp==="locations"&&<SPick label="Parent Location" items={(da.locations||[]).filter(function(l){return l.id!==d.id})} currentId={d.parent} onPick={function(id){u("parent",id)}} onClear={function(){u("parent",null)}} onNav={function(id){p.onNav("locations",id)}} icon={<ILoc/>}/>}
+    {tp==="locations"&&<MPick label="NPCs" items={da.npcs||[]} linkedIds={d.npcs} onAdd={function(id){u("npcs",(d.npcs||[]).concat([id]))}} onRemove={function(id){u("npcs",(d.npcs||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("npcs",id)}} icon={<INpc/>} onCreate={function(n){return cr("npcs",n)}}/>}
+    {tp==="locations"&&<MPick label="Encounters" items={da.encounters||[]} linkedIds={d.encounters} onAdd={function(id){u("encounters",(d.encounters||[]).concat([id]))}} onRemove={function(id){u("encounters",(d.encounters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("encounters",id)}} icon={<IEnc/>} onCreate={function(n){return cr("encounters",n)}}/>}
+    {tp==="locations"&&<MPick label="Monsters" items={da.monsters||[]} linkedIds={d.monsters} onAdd={function(id){u("monsters",(d.monsters||[]).concat([id]))}} onRemove={function(id){u("monsters",(d.monsters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("monsters",id)}} icon={<IMon/>} onCreate={function(n){return cr("monsters",n)}}/>}
+    {tp==="locations"&&<MPick label="Factions" items={da.factions||[]} linkedIds={d.factions} onAdd={function(id){u("factions",(d.factions||[]).concat([id]))}} onRemove={function(id){u("factions",(d.factions||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("factions",id)}} icon={<IFac/>} onCreate={function(n){return cr("factions",n)}}/>}
+
+    {tp==="encounters"&&<MPick label="Locations" items={da.locations||[]} linkedIds={d.locations||(d.location?[d.location]:[])} onAdd={function(id){u("locations",(d.locations||(d.location?[d.location]:[])).concat([id]))}} onRemove={function(id){u("locations",(d.locations||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("locations",id)}} icon={<ILoc/>} onCreate={function(n){return cr("locations",n)}}/>}
+    {tp==="encounters"&&<MPick label="NPCs" items={da.npcs||[]} linkedIds={d.npcs} onAdd={function(id){u("npcs",(d.npcs||[]).concat([id]))}} onRemove={function(id){u("npcs",(d.npcs||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("npcs",id)}} icon={<INpc/>} onCreate={function(n){return cr("npcs",n)}}/>}
+    {tp==="encounters"&&<MPick label="Monsters" items={da.monsters||[]} linkedIds={d.monsters} onAdd={function(id){u("monsters",(d.monsters||[]).concat([id]))}} onRemove={function(id){u("monsters",(d.monsters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("monsters",id)}} icon={<IMon/>} onCreate={function(n){return cr("monsters",n)}}/>}
+    {tp==="encounters"&&<MPick label="Factions" items={da.factions||[]} linkedIds={d.factions} onAdd={function(id){u("factions",(d.factions||[]).concat([id]))}} onRemove={function(id){u("factions",(d.factions||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("factions",id)}} icon={<IFac/>} onCreate={function(n){return cr("factions",n)}}/>}
+
+    {tp==="monsters"&&<MPick label="Locations" items={da.locations||[]} linkedIds={d.locations} onAdd={function(id){u("locations",(d.locations||[]).concat([id]))}} onRemove={function(id){u("locations",(d.locations||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("locations",id)}} icon={<ILoc/>} onCreate={function(n){return cr("locations",n)}}/>}
+    {tp==="monsters"&&<MPick label="Encounters" items={da.encounters||[]} linkedIds={d.encounters} onAdd={function(id){u("encounters",(d.encounters||[]).concat([id]))}} onRemove={function(id){u("encounters",(d.encounters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("encounters",id)}} icon={<IEnc/>} onCreate={function(n){return cr("encounters",n)}}/>}
+
+    {tp==="factions"&&<MPick label="Members" items={da.npcs||[]} linkedIds={d.npcs} onAdd={function(id){u("npcs",(d.npcs||[]).concat([id]))}} onRemove={function(id){u("npcs",(d.npcs||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("npcs",id)}} icon={<INpc/>} onCreate={function(n){return cr("npcs",n)}}/>}
+    {tp==="factions"&&<MPick label="Locations" items={da.locations||[]} linkedIds={d.locations} onAdd={function(id){u("locations",(d.locations||[]).concat([id]))}} onRemove={function(id){u("locations",(d.locations||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("locations",id)}} icon={<ILoc/>} onCreate={function(n){return cr("locations",n)}}/>}
+    {tp==="factions"&&<MPick label="Encounters" items={da.encounters||[]} linkedIds={d.encounters} onAdd={function(id){u("encounters",(d.encounters||[]).concat([id]))}} onRemove={function(id){u("encounters",(d.encounters||[]).filter(function(x){return x!==id}))}} onNav={function(id){p.onNav("encounters",id)}} icon={<IEnc/>} onCreate={function(n){return cr("encounters",n)}}/>}
+
+    <div className="det-act"><button className="btn btn-p" onClick={function(){p.onSave(tp,d)}}><ISave/> Save</button><button className="btn btn-d" onClick={function(){p.onDel(tp,p.entity.id)}}><ITr/> Delete</button></div>
+  </div>);
+}
+
+/* ═══ Session Detail ═══ */
+function SesDet(p){
+  var _d=useState(Object.assign({},p.session));var d=_d[0];var sD=_d[1];
+  var _nn=useState("");var nn=_nn[0];var sNn=_nn[1];
+  var prev=useRef(p.session?p.session.id:null);
+  useEffect(function(){if(p.session&&p.session.id!==prev.current){sD(Object.assign({},p.session));sNn("");prev.current=p.session.id}},[p.session]);
+  if(!p.session)return null;
+  function addN(){if(!nn.trim())return;sD(Object.assign({},d,{notes:(d.notes||[]).concat([nn.trim()])}));sNn("")}
+  return(<div className="det"><div className="det-tp">Session Log</div>
+    <input className="det-nm" style={{fontSize:22}} value={d.title||""} onChange={function(e){sD(Object.assign({},d,{title:e.target.value}))}} placeholder="Session title..."/>
+    <div className="fld"><div className="fld-l">Date</div><input type="date" className="fld-sel" value={d.date||""} onChange={function(e){sD(Object.assign({},d,{date:e.target.value}))}}/></div>
+    <div className="fld"><div className="fld-l">Notes</div>
+      {(d.notes||[]).map(function(n,i){return <div key={i} className="nr"><div className="bul"/><input value={n} onChange={function(e){var ns=d.notes.slice();ns[i]=e.target.value;sD(Object.assign({},d,{notes:ns}))}}/><button className="btn btn-g btn-sm" style={{padding:3}} onClick={function(){var ns=d.notes.slice();ns.splice(i,1);sD(Object.assign({},d,{notes:ns}))}}><ITr/></button></div>})}
+      <div className="anr"><input value={nn} onChange={function(e){sNn(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addN()}} placeholder="Add a note..."/><button className="btn btn-s btn-sm" onClick={addN}><IPlus/></button></div>
+    </div>
+    <div className="det-act"><button className="btn btn-p" onClick={function(){p.onSave("sessions",d)}}><ISave/> Save</button><button className="btn btn-d" onClick={function(){p.onDel("sessions",p.session.id)}}><ITr/> Delete</button></div>
+  </div>);
+}
+
+/* ═══ Export Modal ═══ */
+function ExpMo(p){
+  var d=getExportData();
+  var defName=d.campaign.replace(/[^a-zA-Z0-9 ]/g,"_")+"_"+new Date().toISOString().split("T")[0];
+  var _fn=useState(defName);var fn=_fn[0];var sFn=_fn[1];
+  var counts=[d.locations.length+" loc",d.npcs.length+" NPCs",d.encounters.length+" enc",d.monsters.length+" mon",d.factions.length+" fac",(d.party||[]).length+" PCs",d.sessions.length+" sessions",d.storyNodes.length+" story nodes"];
+  function doIt(){doExport(fn);p.onClose();p.onDone()}
+  return(<div className="mo" onClick={p.onClose}><div className="mo-bx" style={{maxWidth:460}} onClick={function(e){e.stopPropagation()}}>
+    <div className="mo-hd"><h2>Export Campaign</h2><button className="tb-b" onClick={p.onClose}><IX/></button></div>
+    <div className="mo-bd">
+      <div className="exp-pre">Exporting <strong>{d.campaign}</strong> with {counts.join(", ")}.</div>
+      <div className="fld-l" style={{marginBottom:6}}>Filename</div>
+      <div className="exp-fn"><input value={fn} onChange={function(e){sFn(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")doIt()}}/><span className="ext">.json</span></div>
+      {window.showSaveFilePicker&&<div style={{marginTop:10,fontSize:12,color:"var(--tx2)"}}>Your browser supports choosing a save location.</div>}
+      {!window.showSaveFilePicker&&<div style={{marginTop:10,fontSize:12,color:"var(--tx2)"}}>File will be saved to your Downloads folder.</div>}
+    </div>
+    <div className="mo-ft"><button className="btn btn-s" onClick={p.onClose}>Cancel</button><button className="btn btn-p" onClick={doIt}><IDn/> Export</button></div>
+  </div></div>);
+}
+
+/* ═══ Import Modal ═══ */
+function ImpMo(p){
+  var _t=useState("");var t=_t[0];var sT=_t[1];
+  var _e=useState(null);var er=_e[0];var sE=_e[1];
+  var _ok=useState(null);var ok=_ok[0];var sOk=_ok[1];
+  var _pa=useState(null);var pa=_pa[0];var sPa=_pa[1];
+  var _mp=useState(null);var mp=_mp[0];var sMp=_mp[1];
+  var _mc=useState({});var mc=_mc[0];var sMc=_mc[1];
+  var fr=useRef(null);
+  function hFile(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){sT(ev.target.result);sPa(null);sMp(null)};r.readAsText(f)}
+  function parse(){sE(null);sOk(null);try{var q=JSON.parse(t);if(!q.locations&&!q.npcs&&!q.encounters&&!q.monsters&&!q.factions&&!q.storyNodes){sE("JSON needs at least one entity array");return null}sPa(q);return q}catch(e){sE("Invalid JSON: "+e.message);return null}}
+  function doReplace(){var q=pa||parse();if(!q)return;p.onImp(q);sOk("Replaced all data")}
+  function buildPrev(){var q=pa||parse();if(!q)return;sPa(q);var ms=[];var ni=[];var ch={};TYPES.concat(["storyNodes"]).forEach(function(tp){(q[tp]||[]).forEach(function(it){var ex=(p.data[tp]||[]).find(function(e){return e.name&&it.name&&e.name.toLowerCase().trim()===it.name.toLowerCase().trim()});var k=tp+":"+it.id;if(ex){ms.push({type:tp,incoming:it,existing:ex,key:k});ch[k]=true}else{ni.push({type:tp,item:it,key:k});ch[k]=true}})});sMp({ms:ms,ni:ni});sMc(ch)}
+  function togCh(k){sMc(function(o){var n=Object.assign({},o);n[k]=!n[k];return n})}
+  function doMerge(){if(!mp||!pa)return;p.onMerge(pa,mp.ms.filter(function(m){return mc[m.key]}),mp.ni.filter(function(n){return mc[n.key]}));sOk("Merged!");sMp(null)}
+  return(<div className="mo" onClick={p.onClose}><div className="mo-bx" onClick={function(e){e.stopPropagation()}}>
+    <div className="mo-hd"><h2>Import Adventure Data</h2><button className="tb-b" onClick={p.onClose}><IX/></button></div>
+    <div className="mo-bd">
+      {!mp&&<><div className="f-dr" onClick={function(){fr.current&&fr.current.click()}}><IUp/><p style={{marginTop:6,fontSize:13}}>Tap to upload .json</p><input ref={fr} type="file" accept=".json" onChange={hFile} style={{display:"none"}}/></div>
+      <div className="or-d">or paste JSON</div>
+      <textarea className="imp-ta" value={t} onChange={function(e){sT(e.target.value);sE(null);sOk(null);sPa(null)}} placeholder={'{ "campaign": "...", "locations": [...] }'}/></>}
+      {mp&&<><div className="mg-sum">Found <strong>{mp.ms.length}</strong> matches and <strong>{mp.ni.length}</strong> new entities.</div>
+      {mp.ms.length>0&&<div className="mg-sec"><div className="mg-sec-t">Matches (merge)</div>{mp.ms.map(function(m){return <div key={m.key} className="mg-it match"><input type="checkbox" checked={mc[m.key]||false} onChange={function(){togCh(m.key)}}/><label onClick={function(){togCh(m.key)}}><span className="mg-mb">merge</span><span>{m.incoming.name}</span><span style={{color:"var(--tx2)",fontSize:11}}>({TYPE_LABELS[m.type]||m.type})</span></label></div>})}</div>}
+      {mp.ni.length>0&&<div className="mg-sec"><div className="mg-sec-t">New (add)</div>{mp.ni.map(function(n){return <div key={n.key} className="mg-it new-it"><input type="checkbox" checked={mc[n.key]||false} onChange={function(){togCh(n.key)}}/><label onClick={function(){togCh(n.key)}}><span className="mg-nb">new</span><span>{n.item.name||n.item.id}</span><span style={{color:"var(--tx2)",fontSize:11}}>({TYPE_LABELS[n.type]||n.type})</span></label></div>})}</div>}</>}
+      {er&&<div className="err">{er}</div>}{ok&&<div className="okmsg">{ok}</div>}
+    </div>
+    <div className="mo-ft">{mp?<><button className="btn btn-s" onClick={function(){sMp(null)}}>Back</button><button className="btn btn-p" onClick={doMerge}>Confirm Merge</button></>:<><button className="btn btn-s" onClick={p.onClose}>Cancel</button><button className="btn btn-d" onClick={doReplace} disabled={!t.trim()}>Replace</button><button className="btn btn-p" onClick={buildPrev} disabled={!t.trim()}>Merge</button></>}</div>
+  </div></div>);
+}
+
+/* ═══ Party Dashboard ═══ */
+function newPC(){return{id:gid("pc"),name:"New Character",player_name:"",race:"",class_name:"",level:1,hp_current:10,hp_max:10,ac:10,ac_touch:10,ac_flat:10,bab:"0",grapple:"0",speed:"30 ft",initiative_mod:"0",spot:"0",listen:"0",abilities:["10","10","10","10","10","10"],saves:["","",""],key_skills:[],spell_slots:{},languages:"Common",notes:""}}
+
+function PCCard(p){
+  var c=p.pc;
+  var _ed=useState(false);var ed=_ed[0];var sEd=_ed[1];
+  var _sk=useState("");var sk=_sk[0];var sSk=_sk[1];
+  var pct=c.hp_max>0?Math.max(0,Math.min(100,Math.round(c.hp_current/c.hp_max*100))):100;
+  var hpCol=pct>60?"#16a34a":pct>30?"#d97706":"#dc2626";
+  function ch(f,v){p.onChange(c.id,Object.assign({},c,{[f]:v}))}
+  function chA(i,v){var a=(c.abilities||[]).slice();a[i]=v;p.onChange(c.id,Object.assign({},c,{abilities:a}))}
+  function chSv(i,v){var s=(c.saves||[]).slice();s[i]=v;p.onChange(c.id,Object.assign({},c,{saves:s}))}
+  function addSk(){if(!sk.trim())return;p.onChange(c.id,Object.assign({},c,{key_skills:(c.key_skills||[]).concat([{name:sk.trim(),modifier:""}])}));sSk("")}
+  function rmSk(i){var ks=(c.key_skills||[]).slice();ks.splice(i,1);p.onChange(c.id,Object.assign({},c,{key_skills:ks}))}
+  function chSk(i,f,v){var ks=(c.key_skills||[]).slice();ks[i]=Object.assign({},ks[i],{[f]:v});p.onChange(c.id,Object.assign({},c,{key_skills:ks}))}
+  function chSS(lv,v){var ss=Object.assign({},c.spell_slots||{});if(v===""||v==="0")delete ss[lv];else ss[lv]=parseInt(v)||0;p.onChange(c.id,Object.assign({},c,{spell_slots:ss}))}
+  var init=(c.name||"?")[0].toUpperCase();
+  return(<div className="pc-card">
+    <div className="pc-top"><div className="pc-av">{init}</div><div className="pc-id"><div className="pc-nm">{c.name}</div><div className="pc-cl">{c.race} {c.class_name}{c.level?" Lv"+c.level:""}</div>{c.player_name&&<div className="pc-pl">Player: {c.player_name}</div>}</div>
+      <div className="pc-edit"><button onClick={function(){sEd(!ed)}} title="Edit"><ISave/></button><button className="del" onClick={function(){p.onDel(c.id)}} title="Delete"><ITr/></button></div>
+    </div>
+    {/* HP bar */}
+    <div className="pc-hp"><div className="pc-hp-r"><label>HP</label><div className="pc-hp-bar"><div className="pc-hp-fill" style={{width:pct+"%",background:hpCol}}/></div><div className="pc-hp-v"><input className="pc-hp-in" value={c.hp_current} onChange={function(e){ch("hp_current",parseInt(e.target.value)||0)}}/> / <input className="pc-hp-in" value={c.hp_max} onChange={function(e){ch("hp_max",parseInt(e.target.value)||1)}}/></div></div></div>
+    {/* Quick stats */}
+    <div className="pc-qs">
+      <div className="pc-q"><label>AC</label><div className="qv">{c.ac}</div></div>
+      <div className="pc-q"><label>Touch</label><div className="qv">{c.ac_touch||"—"}</div></div>
+      <div className="pc-q"><label>Flat</label><div className="qv">{c.ac_flat||"—"}</div></div>
+      <div className="pc-q"><label>Init</label><div className="qv">{c.initiative_mod>=0?"+":""}{c.initiative_mod}</div></div>
+      <div className="pc-q"><label>BAB</label><div className="qv-sm">{c.bab||"—"}</div></div>
+      <div className="pc-q"><label>Grapple</label><div className="qv-sm">{c.grapple||"—"}</div></div>
+      <div className="pc-q"><label>Speed</label><div className="qv-sm">{c.speed||"—"}</div></div>
+      <div className="pc-q"><label>Spot</label><div className="qv">{c.spot||"—"}</div></div>
+      <div className="pc-q"><label>Listen</label><div className="qv">{c.listen||"—"}</div></div>
+    </div>
+    {/* Abilities */}
+    <div className="pc-abs"><div className="sg">{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(c.abilities&&c.abilities[i])||""} onChange={function(e){chA(i,e.target.value)}} placeholder="—"/></div>})}</div></div>
+    {/* Saves */}
+    <div className="pc-svs">{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"45px"}} value={(c.saves&&c.saves[i])||""} onChange={function(e){chSv(i,e.target.value)}} placeholder="—"/></div>})}</div>
+    {/* Skills */}
+    {((c.key_skills&&c.key_skills.length>0)||ed)&&<div className="pc-sk"><div className="pc-sk-l">Key Skills</div><div className="pc-sk-r">{(c.key_skills||[]).map(function(s,i){return <div key={i} className="pc-sk-ch" title="Click to remove" style={{cursor:ed?"pointer":"default"}} onClick={function(){if(ed)rmSk(i)}}>{s.name} {s.modifier&&<span style={{fontWeight:700}}>{s.modifier}</span>}{ed&&<span style={{marginLeft:2,opacity:.5}}>x</span>}</div>})}</div>
+    {ed&&<div style={{display:"flex",gap:4,marginTop:6}}><input style={{flex:1,padding:"4px 8px",border:"1px solid var(--bd)",borderRadius:5,fontSize:12,fontFamily:"inherit",outline:"none"}} value={sk} onChange={function(e){sSk(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addSk()}} placeholder="Add skill..."/><button className="btn btn-s btn-sm" onClick={addSk}><IPlus/></button></div>}
+    </div>}
+    {/* Spell Slots */}
+    {(Object.keys(c.spell_slots||{}).length>0||ed)&&<div className="pc-sp"><div className="pc-sp-l">Spell Slots</div><div className="pc-sp-r">{[1,2,3,4,5,6,7,8,9].map(function(lv){var v=c.spell_slots&&c.spell_slots[lv];if(!v&&!ed)return null;return <div key={lv} className="pc-sp-lv"><strong>Lv{lv}:</strong> <input style={{width:30,border:"1px solid var(--bd)",borderRadius:3,textAlign:"center",fontSize:12,padding:"1px 2px",fontFamily:"inherit",outline:"none"}} value={v||""} onChange={function(e){chSS(lv,e.target.value)}} placeholder="—"/></div>})}</div></div>}
+    {/* Edit fields */}
+    {ed&&<div className="pc-edt">
+      <div className="pc-row"><label>Name</label><input value={c.name||""} onChange={function(e){ch("name",e.target.value)}}/></div>
+      <div className="pc-row"><label>Player</label><input value={c.player_name||""} onChange={function(e){ch("player_name",e.target.value)}}/></div>
+      <div className="pc-row"><label>Race</label><input value={c.race||""} onChange={function(e){ch("race",e.target.value)}}/></div>
+      <div className="pc-row"><label>Class</label><input value={c.class_name||""} onChange={function(e){ch("class_name",e.target.value)}}/></div>
+      <div className="pc-row"><label>Level</label><input style={{width:50}} value={c.level||""} onChange={function(e){ch("level",parseInt(e.target.value)||1)}}/></div>
+      <div className="pc-row"><label>AC</label><input style={{width:50}} value={c.ac||""} onChange={function(e){ch("ac",parseInt(e.target.value)||10)}}/></div>
+      <div className="pc-row"><label>Touch</label><input style={{width:50}} value={c.ac_touch||""} onChange={function(e){ch("ac_touch",parseInt(e.target.value)||10)}}/></div>
+      <div className="pc-row"><label>Flat</label><input style={{width:50}} value={c.ac_flat||""} onChange={function(e){ch("ac_flat",parseInt(e.target.value)||10)}}/></div>
+      <div className="pc-row"><label>Init</label><input style={{width:50}} value={c.initiative_mod||""} onChange={function(e){ch("initiative_mod",e.target.value)}}/></div>
+      <div className="pc-row"><label>BAB</label><input style={{width:50}} value={c.bab||""} onChange={function(e){ch("bab",e.target.value)}}/></div>
+      <div className="pc-row"><label>Grapple</label><input style={{width:50}} value={c.grapple||""} onChange={function(e){ch("grapple",e.target.value)}}/></div>
+      <div className="pc-row"><label>Speed</label><input style={{width:80}} value={c.speed||""} onChange={function(e){ch("speed",e.target.value)}}/></div>
+      <div className="pc-row"><label>Spot</label><input style={{width:50}} value={c.spot||""} onChange={function(e){ch("spot",e.target.value)}}/></div>
+      <div className="pc-row"><label>Listen</label><input style={{width:50}} value={c.listen||""} onChange={function(e){ch("listen",e.target.value)}}/></div>
+      <div className="pc-row"><label>Langs</label><input value={c.languages||""} onChange={function(e){ch("languages",e.target.value)}}/></div>
+    </div>}
+    {/* Notes */}
+    <div className="pc-nt"><textarea value={c.notes||""} onChange={function(e){ch("notes",e.target.value)}} placeholder="Notes..."/></div>
+  </div>);
+}
+
+function PartyView(p){
+  var party=p.party||[];
+  function add(){var pc=newPC();p.onUpdate(party.concat([pc]))}
+  function del(id){if(!window.confirm("Remove this character?"))return;p.onUpdate(party.filter(function(c){return c.id!==id}))}
+  function change(id,updated){p.onUpdate(party.map(function(c){return c.id===id?updated:c}))}
+  return(<div className="pty-wrap">
+    <div className="pty-hd"><h2>Party ({party.length})</h2><button className="btn btn-p" onClick={add}><IPlus/> Add Character</button></div>
+    {party.length===0&&<div className="welcome"><h2>No Party Members</h2><p>Add your players' characters to track their stats at the table.</p><button className="btn btn-p" onClick={add}><IPlus/> Add First Character</button></div>}
+    <div className="pty-grid">{party.map(function(pc){return <PCCard key={pc.id} pc={pc} onChange={change} onDel={del}/>})}</div>
+  </div>);
+}
+
+/* ═══ Initiative Tracker ═══ */
+function CombatPanel(p){
+  var its=p.its,sIts=p.sIts,rnd=p.rnd,sRnd=p.sRnd,act=p.act,sAct=p.sAct,fxs=p.fxs,sFxs=p.sFxs;
+  var _nm=useState("");var nm=_nm[0];var sNm=_nm[1];
+  var _ini=useState("");var ini=_ini[0];var sIni=_ini[1];
+  var _fn=useState("");var fn=_fn[0];var sFn=_fn[1];
+  var _fd=useState("1");var fd=_fd[0];var sFd=_fd[1];
+  var _fnote=useState("");var fnote=_fnote[0];var sFnote=_fnote[1];
+  var _dg=useState(null);var dg=_dg[0];var sDg=_dg[1];
+  var party=p.party||[];
+
+  function addIt(){if(!nm.trim())return;sIts(function(prev){return prev.concat([{id:gid("ini"),name:nm.trim(),init:parseInt(ini)||0}])});sNm("");sIni("")}
+  function addPC(pc){sIts(function(prev){if(prev.some(function(i){return i.name===pc.name}))return prev;return prev.concat([{id:gid("ini"),name:pc.name,init:parseInt(pc.initiative_mod)||0}])})}
+  function rmIt(id){sIts(function(prev){var n=prev.filter(function(i){return i.id!==id});if(act>=n.length)sAct(Math.max(0,n.length-1));return n})}
+  function mvUp(idx){if(idx<=0)return;sIts(function(prev){var n=prev.slice();var t=n[idx];n[idx]=n[idx-1];n[idx-1]=t;if(act===idx)sAct(idx-1);else if(act===idx-1)sAct(idx);return n})}
+  function mvDn(idx){sIts(function(prev){if(idx>=prev.length-1)return prev;var n=prev.slice();var t=n[idx];n[idx]=n[idx+1];n[idx+1]=t;if(act===idx)sAct(idx+1);else if(act===idx+1)sAct(idx);return n})}
+  function nextTurn(){if(its.length===0)return;var nxt=act+1;if(nxt>=its.length){nxt=0;sRnd(function(r){return r+1});sFxs(function(prev){return prev.map(function(f){return Object.assign({},f,{remaining:f.remaining-1})})})}sAct(nxt)}
+  function prevTurn(){if(its.length===0)return;if(act===0){sRnd(function(r){return Math.max(1,r-1)});sFxs(function(prev){return prev.map(function(f){return Object.assign({},f,{remaining:f.remaining+1})})});sAct(its.length-1)}else{sAct(act-1)}}
+  function clearAll(){sIts([]);sAct(0);sRnd(1);sFxs([])}
+  function sortByInit(){sIts(function(prev){return prev.slice().sort(function(a,b){return b.init-a.init})});sAct(0)}
+  function addFx(){if(!fn.trim())return;sFxs(function(prev){return prev.concat([{id:gid("fx"),name:fn.trim(),remaining:parseInt(fd)||1,note:fnote.trim()}])});sFn("");sFd("1");sFnote("")}
+  function rmFx(id){sFxs(function(prev){return prev.filter(function(f){return f.id!==id})})}
+  function onDragStart(e,idx){sDg(idx);e.dataTransfer.effectAllowed="move"}
+  function onDragOver(e,idx){e.preventDefault();if(dg===null||dg===idx)return;sIts(function(prev){var n=prev.slice();var item=n.splice(dg,1)[0];n.splice(idx,0,item);if(act===dg)sAct(idx);else if(dg<act&&idx>=act)sAct(act-1);else if(dg>act&&idx<=act)sAct(act+1);sDg(idx);return n})}
+  function onDragEnd(){sDg(null)}
+
+  return(<div className={"cbt-panel"+(p.open?"":" closed")}>
+    <div className="cbt-hd"><h3>Combat</h3><div className="cbt-rnd"><span className="rnd-l">Rnd</span><button onClick={function(){sRnd(function(r){return Math.max(1,r-1)})}}>-</button><span className="rnd-v">{rnd}</span><button onClick={function(){sRnd(function(r){return r+1})}}>+</button></div><button className="tb-b" onClick={p.onClose}><IX/></button></div>
+    <div className="cbt-bd">
+      {party.length>0&&<div className="init-pty">{party.map(function(pc){return <button key={pc.id} className="init-pty-btn" onClick={function(){addPC(pc)}}>{pc.name} ({pc.initiative_mod>=0?"+":""}{pc.initiative_mod})</button>})}</div>}
+      <div className="init-add"><input value={nm} onChange={function(e){sNm(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addIt()}} placeholder="Name..."/><input className="init-num" value={ini} onChange={function(e){sIni(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addIt()}} placeholder="Init"/><button className="btn btn-p btn-sm" onClick={addIt}><IPlus/></button></div>
+      <div className="init-list">{its.map(function(it,idx){return <div key={it.id} className={"init-it"+(idx===act?" active":"")+(dg===idx?" dragging":"")} draggable onDragStart={function(e){onDragStart(e,idx)}} onDragOver={function(e){onDragOver(e,idx)}} onDragEnd={onDragEnd}><span className="it-pos">{idx+1}</span><span className="it-nm">{it.name}</span><span className="it-ini">{it.init}</span><div className="it-act"><button onClick={function(){mvUp(idx)}} title="Up"><IUp2/></button><button onClick={function(){mvDn(idx)}} title="Down"><IDn2/></button><button className="del" onClick={function(){rmIt(it.id)}} title="Remove"><IX/></button></div></div>})}</div>
+      {its.length>0&&<div className="init-nxt"><button className="btn btn-s btn-sm" onClick={prevTurn}>Prev</button><button className="btn btn-p btn-sm" onClick={nextTurn}><IPlay/> Next</button><button className="btn btn-s btn-sm" onClick={sortByInit}>Sort</button></div>}
+      {its.length>0&&<div style={{marginTop:6}}><button className="btn btn-d btn-sm" style={{width:"100%"}} onClick={clearAll}><ITr/> Clear All</button></div>}
+      {its.length===0&&<div style={{color:"var(--tx2)",fontSize:12,textAlign:"center",padding:12,opacity:.5}}>Add party members or type any name to start combat.</div>}
+      <div className="cbt-div"/>
+      <div className="fx-hd">Active Effects</div>
+      <div className="fx-add"><input value={fn} onChange={function(e){sFn(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addFx()}} placeholder="Effect..."/><input className="fx-dur" value={fd} onChange={function(e){sFd(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addFx()}} placeholder="Rds"/><button className="btn btn-p btn-sm" onClick={addFx}><IPlus/></button></div>
+      {fnote||fxs.length>0?null:<div style={{marginBottom:6}}><input className="fld-in" style={{fontSize:11,padding:"4px 8px"}} value={fnote} onChange={function(e){sFnote(e.target.value)}} placeholder="Note (optional)"/></div>}
+      <div className="fx-list">{fxs.map(function(fx){var exp=fx.remaining<=0;var warn=fx.remaining===1;return <div key={fx.id} className={"fx-it"+(exp?" expired":"")+(warn?" expiring":"")}><div className="fx-nm">{fx.name}</div><div className={"fx-dur-v"+(exp?" gone":"")+(warn?" warn":"")}>{exp?"Done":fx.remaining+"r"}</div>{fx.note&&<div className="fx-nt">{fx.note}</div>}<button onClick={function(){rmFx(fx.id)}}><IX/></button></div>})}</div>
+      {fxs.length===0&&<div style={{color:"var(--tx2)",fontSize:11,textAlign:"center",padding:10,opacity:.5}}>Track spells, conditions, effects with round durations.</div>}
+    </div>
+  </div>);
+}
+
+/* ═══ Storyline ═══ */
+function StoryView(p){
+  var nds=p.nodes,edg=p.edges,sN=p.setNodes,sE=p.setEdges;
+  var wr=useRef(null);
+  var _p=useState({x:60,y:60});var pan=_p[0];var sPan=_p[1];
+  var _z=useState(.85);var zm=_z[0];var sZm=_z[1];
+  var _dn=useState(null);var dn=_dn[0];var sDn=_dn[1];
+  var _ps=useState(null);var ps=_ps[0];var sPs=_ps[1];
+  var _sn=useState(null);var sn=_sn[0];var sSn=_sn[1];
+  var _se=useState(null);var se=_se[0];var sSe=_se[1];
+  var _dc=useState(null);var dc=_dc[0];var sDc=_dc[1];
+  var _mp=useState(null);var mpo=_mp[0];var sMp=_mp[1];
+
+  function gP(nd){return{top:{x:nd.x+NODE_W/2,y:nd.y},bottom:{x:nd.x+NODE_W/2,y:nd.y+NODE_H},left:{x:nd.x,y:nd.y+NODE_H/2},right:{x:nd.x+NODE_W,y:nd.y+NODE_H/2}}}
+  function nrP(fn,tn){var fp=gP(fn),tp=gP(tn),best=null,bd=1e9;["top","bottom","left","right"].forEach(function(fs){["top","bottom","left","right"].forEach(function(ts){var dx=fp[fs].x-tp[ts].x,dy=fp[fs].y-tp[ts].y,d=Math.sqrt(dx*dx+dy*dy);if(d<bd){bd=d;best={from:fp[fs],to:tp[ts],fs:fs,ts:ts}}})});return best}
+  function mkP(a,b,as,bs){var off=Math.max(Math.min(Math.abs(b.x-a.x),Math.abs(b.y-a.y))*.5,50);var c1={x:a.x,y:a.y},c2={x:b.x,y:b.y};if(as==="top")c1.y-=off;else if(as==="bottom")c1.y+=off;else if(as==="left")c1.x-=off;else c1.x+=off;if(bs==="top")c2.y-=off;else if(bs==="bottom")c2.y+=off;else if(bs==="left")c2.x-=off;else c2.x+=off;return"M"+a.x+","+a.y+" C"+c1.x+","+c1.y+" "+c2.x+","+c2.y+" "+b.x+","+b.y}
+
+  var arrows=useMemo(function(){if(!edg||!nds)return[];return edg.map(function(e){var fn=nds.find(function(n){return n.id===e.from}),tn=nds.find(function(n){return n.id===e.to});if(!fn||!tn)return null;var pp=nrP(fn,tn);return{id:e.id,d:mkP(pp.from,pp.to,pp.fs,pp.ts),mx:(pp.from.x+pp.to.x)/2,my:(pp.from.y+pp.to.y)/2}}).filter(Boolean)},[nds,edg]);
+
+  function onBg(e){if(e.target!==wr.current)return;sSe(null);sSn(null);sPs({sx:e.clientX,sy:e.clientY,px:pan.x,py:pan.y})}
+  useEffect(function(){if(!ps)return;function mv(e){sPan({x:ps.px+(e.clientX-ps.sx)/zm,y:ps.py+(e.clientY-ps.sy)/zm})}function up(){sPs(null)}window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);return function(){window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up)}},[ps,zm]);
+
+  function onNd(e,nd){e.stopPropagation();sDn({id:nd.id,sx:e.clientX,sy:e.clientY,nx:nd.x,ny:nd.y});sSn(nd.id);sSe(null)}
+  useEffect(function(){if(!dn)return;function mv(e){sN(function(pr){return pr.map(function(n){return n.id===dn.id?Object.assign({},n,{x:dn.nx+(e.clientX-dn.sx)/zm,y:dn.ny+(e.clientY-dn.sy)/zm}):n})})}function up(){sDn(null);sSave("storyNodes",nds)}window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);return function(){window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up)}},[dn,zm,nds,sN]);
+
+  function onPt(e,nid,side){e.stopPropagation();e.preventDefault();var nd=nds.find(function(n){return n.id===nid});if(!nd)return;sDc({fid:nid,fs:side,fp:gP(nd)[side]});sMp(gP(nd)[side])}
+  useEffect(function(){if(!dc)return;function mv(e){var r=wr.current.getBoundingClientRect();sMp({x:(e.clientX-r.left)/zm-pan.x,y:(e.clientY-r.top)/zm-pan.y})}function up(e){var r=wr.current.getBoundingClientRect();var mx=(e.clientX-r.left)/zm-pan.x,my=(e.clientY-r.top)/zm-pan.y;var bi=null,bd=30;(nds||[]).forEach(function(nd){if(nd.id===dc.fid)return;var pts=gP(nd);["top","bottom","left","right"].forEach(function(s){var d=Math.sqrt(Math.pow(mx-pts[s].x,2)+Math.pow(my-pts[s].y,2));if(d<bd){bd=d;bi=nd.id}})});if(bi){if(!(edg||[]).some(function(e){return e.from===dc.fid&&e.to===bi})){var u=(edg||[]).concat([{id:gid("ste"),from:dc.fid,to:bi}]);sE(u);sSave("storyEdges",u)}}sDc(null);sMp(null)}window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);return function(){window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up)}},[dc,zm,pan,nds,edg,sE]);
+
+  function addNd(){var w=wr.current?wr.current.clientWidth:800,h=wr.current?wr.current.clientHeight:600;var encId=p.onCreateEnc?p.onCreateEnc("encounters","New Scene"):null;var nn={id:gid("stn"),name:"New Scene",description:"",type:"event",status:"upcoming",x:-pan.x+w/(2*zm)-105,y:-pan.y+h/(2*zm)-35,encounter_id:encId};var u=(nds||[]).concat([nn]);sN(u);sSave("storyNodes",u);sSn(nn.id)}
+  function upNd(id,ch){
+    var u=(nds||[]).map(function(n){return n.id===id?Object.assign({},n,ch):n});sN(u);sSave("storyNodes",u);
+    // Sync name/type/description to linked encounter
+    var nd=u.find(function(n){return n.id===id});
+    if(nd&&nd.encounter_id&&p.onSyncEnc){
+      var syncFields={};
+      if(ch.name!==undefined)syncFields.name=ch.name;
+      if(ch.type!==undefined)syncFields.type=ch.type;
+      if(ch.description!==undefined)syncFields.description=ch.description;
+      if(ch.status!==undefined)syncFields.status=ch.status;
+      if(Object.keys(syncFields).length>0)p.onSyncEnc(nd.encounter_id,syncFields);
+    }
+  }
+  function delNd(id){var un=(nds||[]).filter(function(n){return n.id!==id}),ue=(edg||[]).filter(function(e){return e.from!==id&&e.to!==id});sN(un);sE(ue);sSave("storyNodes",un);sSave("storyEdges",ue);if(sn===id)sSn(null)}
+  function delEd(id){var u=(edg||[]).filter(function(e){return e.id!==id});sE(u);sSave("storyEdges",u);sSe(null)}
+  function fitV(){if(!nds||!nds.length)return;var xs=nds.map(function(n){return n.x}),ys=nds.map(function(n){return n.y});var bx=Math.min.apply(null,xs)-60,by=Math.min.apply(null,ys)-60,bw=Math.max.apply(null,xs)-bx+NODE_W+120,bh=Math.max.apply(null,ys)-by+NODE_H+120;var w=wr.current?wr.current.clientWidth:800,h=wr.current?wr.current.clientHeight:600;var nz=Math.min(w/bw,h/bh,1.2);sZm(nz);sPan({x:-bx+(w/nz-bw)/2,y:-by+(h/nz-bh)/2})}
+
+  var sd=nds?nds.find(function(n){return n.id===sn}):null;
+  return(<div className="st-ct"><div className={"st-w"+(ps||dc?" pan":"")} ref={wr} onPointerDown={onBg}>
+    {(!nds||nds.length===0)?<div className="st-em"><h3>Adventure Storyline</h3><p style={{maxWidth:360,lineHeight:1.6,fontSize:14}}>Map your adventure as connected scenes. Drag between port circles to connect.</p><button className="btn btn-p" onClick={addNd}><IPlus/> Add First Scene</button></div>
+    :<><svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}>
+      <defs><marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(255,255,255,.35)"/></marker><marker id="ahs" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c49a6c"/></marker></defs>
+      <g style={{transform:"scale("+zm+")",transformOrigin:"0 0"}}><g transform={"translate("+pan.x+","+pan.y+")"}>
+        {arrows.map(function(a){var sl=se===a.id;return <g key={a.id}><path d={a.d} stroke="transparent" strokeWidth="22" fill="none" style={{pointerEvents:"stroke",cursor:"pointer"}} onClick={function(e){e.stopPropagation();sSe(sl?null:a.id);sSn(null)}}/><path d={a.d} stroke={sl?"#c49a6c":"rgba(255,255,255,.2)"} strokeWidth={sl?3:2} fill="none" markerEnd={sl?"url(#ahs)":"url(#ah)"} style={{pointerEvents:"none"}}/>{sl&&<g className="edge-del" onClick={function(e){e.stopPropagation();delEd(a.id)}}><circle cx={a.mx} cy={a.my} r="12" fill="rgba(30,30,47,.9)" stroke="#c49a6c" strokeWidth="1.5" style={{pointerEvents:"all",cursor:"pointer"}}/><line x1={a.mx-4} y1={a.my-4} x2={a.mx+4} y2={a.my+4} stroke="#c49a6c" strokeWidth="2" style={{pointerEvents:"none"}}/><line x1={a.mx+4} y1={a.my-4} x2={a.mx-4} y2={a.my+4} stroke="#c49a6c" strokeWidth="2" style={{pointerEvents:"none"}}/></g>}</g>})}
+        {dc&&mpo&&<path d={mkP(dc.fp,mpo,dc.fs,"top")} stroke="#c49a6c" strokeWidth="2" strokeDasharray="6,4" fill="none" style={{pointerEvents:"none"}}/>}
+      </g></g></svg>
+      <div className="st-cv" style={{transform:"scale("+zm+") translate("+pan.x+"px,"+pan.y+"px)"}}>
+        {nds.map(function(nd){var ic=dc&&dc.fid===nd.id;return <div key={nd.id} className={"sn-nd"+(sn===nd.id?" sel":"")} style={{left:nd.x,top:nd.y,background:NBG[nd.status]||NBG.upcoming,borderColor:NBD[nd.status]||NBD.upcoming,touchAction:"none"}} onPointerDown={function(e){onNd(e,nd)}}>
+          <div className="sn-dt" style={{background:NC[nd.status]||NC.upcoming}} title={nd.status}/><div className="sn-tp">{nd.type}{nd.encounter_id?" • linked":""}</div><div className="sn-ti">{nd.name}</div>{nd.description&&<div className="sn-ds">{nd.description}</div>}
+          <div className={"sn-pt pt-t"+(ic?" pact":"")} onPointerDown={function(e){onPt(e,nd.id,"top")}}/><div className={"sn-pt pt-b"+(ic?" pact":"")} onPointerDown={function(e){onPt(e,nd.id,"bottom")}}/><div className={"sn-pt pt-l"+(ic?" pact":"")} onPointerDown={function(e){onPt(e,nd.id,"left")}}/><div className={"sn-pt pt-r"+(ic?" pact":"")} onPointerDown={function(e){onPt(e,nd.id,"right")}}/>
+        </div>})}
+      </div></>}
+    <div className="st-tb"><button onClick={function(){sZm(function(z){return Math.min(z*1.2,2)})}} title="Zoom in"><IZI/></button><button onClick={function(){sZm(function(z){return Math.max(z/1.2,.25)})}} title="Zoom out"><IZO/></button><button onClick={fitV} title="Fit"><IFit/></button><div className="sep"/><button onClick={addNd} title="Add"><IPlus/></button></div>
+  </div>
+  {sd&&<div className="insp"><div className="insp-hd"><span className="insp-l" style={{marginBottom:0}}>Inspector</span><button className="tb-b" style={{color:"rgba(255,255,255,.4)",width:26,height:26}} onClick={function(){sSn(null)}}><IX/></button></div>
+    <div><label className="insp-l">Name</label><input value={sd.name} onChange={function(e){upNd(sd.id,{name:e.target.value})}}/></div>
+    <div><label className="insp-l">Type</label><select value={sd.type} onChange={function(e){upNd(sd.id,{type:e.target.value})}}>{ENC_T.map(function(t){return <option key={t} value={t}>{t}</option>})}</select></div>
+    <div><label className="insp-l">Status</label><select value={sd.status} onChange={function(e){upNd(sd.id,{status:e.target.value})}}>{ND_ST.map(function(s){return <option key={s} value={s}>{s}</option>})}</select></div>
+    <div><label className="insp-l">Link Encounter</label><select value={sd.encounter_id||""} onChange={function(e){upNd(sd.id,{encounter_id:e.target.value||null})}}><option value="">None</option>{(p.data.encounters||[]).map(function(enc){return <option key={enc.id} value={enc.id}>{enc.name}</option>})}</select></div>
+    <div><label className="insp-l">Description</label><textarea value={sd.description||""} onChange={function(e){upNd(sd.id,{description:e.target.value})}} placeholder="Scene notes..."/></div>
+    {sd.encounter_id&&<button className="btn btn-s btn-sm" style={{width:"100%"}} onClick={function(){p.onNav("encounters",sd.encounter_id)}}><IEnc/> Open Encounter</button>}
+    <div style={{flex:1}}/><button className="btn btn-d btn-sm" style={{width:"100%"}} onClick={function(){delNd(sd.id)}}><ITr/> Delete Node</button>
+  </div>}
+  </div>);
+}
+
+/* ═══════════ MAIN APP ═══════════ */
+function App(){
+  var _lo=useState(true);var lo=_lo[0];var sLo=_lo[1];
+  var _da=useState({meta:null,locations:[],npcs:[],encounters:[],monsters:[],factions:[],sessions:[],party:[],storyNodes:[],storyEdges:[]});var da=_da[0];var sDA=_da[1];
+  var _sl=useState({type:null,id:null});var sl=_sl[0];var sSl=_sl[1];
+  var _sb=useState(false);var sb=_sb[0];var sSb=_sb[1];
+  var _sr=useState("");var sr=_sr[0];var sSr=_sr[1];
+  var _te=useState({});var te=_te[0];var sTe=_te[1];
+  var _si=useState(false);var si=_si[0];var sSi=_si[1];
+  var _se2=useState(false);var se2=_se2[0];var sSe2=_se2[1];
+  var _to=useState(null);var to=_to[0];var sTo=_to[1];
+  var _vw=useState("content");var vw=_vw[0];var sVw=_vw[1];
+  var _flt=useState(false);var flt=_flt[0];var sFlt=_flt[1];
+  var _cbt=useState(false);var cbt=_cbt[0];var sCbt=_cbt[1];
+  var _cIts=useState([]);var cIts=_cIts[0];var sCIts=_cIts[1];
+  var _cRnd=useState(1);var cRnd=_cRnd[0];var sCRnd=_cRnd[1];
+  var _cAct=useState(0);var cAct=_cAct[0];var sCAct=_cAct[1];
+  var _cFxs=useState([]);var cFxs=_cFxs[0];var sCFxs=_cFxs[1];
+
+  useEffect(function(){var ld=loadAll();var meta=ld.meta||{campaign:"Willes' Adventures"};if(meta.campaign==="New Campaign")meta.campaign="Willes' Adventures";sSave("meta",meta);sDA({meta:meta,locations:ld.locations||[],npcs:ld.npcs||[],encounters:ld.encounters||[],monsters:ld.monsters||[],factions:ld.factions||[],sessions:ld.sessions||[],party:ld.party||[],storyNodes:ld.storyNodes||[],storyEdges:ld.storyEdges||[]});sLo(false)},[]);
+
+  var shT=useCallback(function(m,t){sTo({msg:m,type:t||"ok",key:Date.now()})},[]);
+  var nav=useCallback(function(t,id){sSl({type:t,id:id});sVw("content");sSb(false)},[]);
+
+  // Save with bidirectional sync + auto story node
+  var hSave=useCallback(function(type,ent){
+    sDA(function(prev){
+      var ls={};Object.keys(prev).forEach(function(k){if(Array.isArray(prev[k]))ls[k]=prev[k].slice()});
+      var ml=(ls[type]||[]).slice();var idx=ml.findIndex(function(e){return e.id===ent.id});if(idx>=0)ml[idx]=ent;else ml.push(ent);ls[type]=ml;
+      // Auto story node for encounters
+      if(type==="encounters"&&!(ls.storyNodes||[]).some(function(s){return s.encounter_id===ent.id})){var sns=(ls.storyNodes||[]).slice();var mx=100;sns.forEach(function(s){if(s.x>mx)mx=s.x});sns.push({id:gid("stn"),name:ent.name||"New Scene",description:"",type:ent.type||"event",status:"upcoming",x:sns.length>0?mx+280:100,y:100,encounter_id:ent.id});ls.storyNodes=sns;sSave("storyNodes",sns)}
+      // Sync encounter name/type/status to linked story nodes
+      if(type==="encounters"){ls.storyNodes=(ls.storyNodes||[]).map(function(sn){if(sn.encounter_id===ent.id){return Object.assign({},sn,{name:ent.name,type:ent.type||sn.type,status:ent.status||sn.status})}return sn});sSave("storyNodes",ls.storyNodes)}
+      // Bidirectional sync
+      var syncMap={npcs:{locations:"locations:npcs",factions:"factions:npcs",related_npcs:"npcs:related_npcs",encounters:"encounters:npcs"},locations:{npcs:"npcs:locations",encounters:"encounters:locations",factions:"factions:locations",monsters:"monsters:locations"},encounters:{locations:"locations:encounters",npcs:"npcs:encounters",monsters:"monsters:encounters",factions:"factions:encounters"},monsters:{locations:"locations:monsters",encounters:"encounters:monsters"},factions:{npcs:"npcs:factions",locations:"locations:factions",encounters:"encounters:factions"}};
+      var sm=syncMap[type];
+      if(sm){Object.keys(sm).forEach(function(field){var parts=sm[field].split(":");var targetList=parts[0];var targetField=parts[1];(ent[field]||[]).forEach(function(tid){ls[targetList]=(ls[targetList]||[]).map(function(te){if(te.id===tid)return Object.assign({},te,{[targetField]:ensureIn(te[targetField],ent.id)});return te})})})}
+      TYPES.concat(["storyNodes"]).forEach(function(k){if(ls[k])sSave(k,ls[k])});
+      return Object.assign({},prev,ls);
+    });shT("Saved");
+  },[shT]);
+
+  // Delete with cleanup
+  var hDel=useCallback(function(type,id){
+    sDA(function(prev){
+      var ls={};Object.keys(prev).forEach(function(k){if(Array.isArray(prev[k]))ls[k]=prev[k].slice()});
+      ls[type]=(ls[type]||[]).filter(function(e){return e.id!==id});
+      function cl(lk,fields){ls[lk]=(ls[lk]||[]).map(function(e){var ch=false,up={};fields.forEach(function(f){if(e[f]&&Array.isArray(e[f])&&e[f].indexOf(id)>=0){up[f]=e[f].filter(function(x){return x!==id});ch=true}});return ch?Object.assign({},e,up):e})}
+      if(type==="npcs"){cl("locations",["npcs"]);cl("encounters",["npcs"]);cl("factions",["npcs"]);cl("npcs",["related_npcs"])}
+      if(type==="locations"){cl("npcs",["locations"]);cl("encounters",["locations"]);cl("factions",["locations"]);cl("monsters",["locations"]);ls.locations=(ls.locations||[]).map(function(l){return l.parent===id?Object.assign({},l,{parent:null}):l})}
+      if(type==="encounters"){cl("locations",["encounters"]);cl("npcs",["encounters"]);cl("factions",["encounters"]);cl("monsters",["encounters"]);ls.storyNodes=(ls.storyNodes||[]).map(function(s){return s.encounter_id===id?Object.assign({},s,{encounter_id:null}):s})}
+      if(type==="monsters"){cl("locations",["monsters"]);cl("encounters",["monsters"])}
+      if(type==="factions"){cl("npcs",["factions"]);cl("locations",["factions"]);cl("encounters",["factions"])}
+      TYPES.concat(["storyNodes"]).forEach(function(k){if(ls[k])sSave(k,ls[k])});
+      return Object.assign({},prev,ls);
+    });sSl({type:null,id:null});shT("Deleted","err");
+  },[shT]);
+
+  var hImp=useCallback(function(pa){sDA(function(prev){var n={meta:{campaign:pa.campaign||(prev.meta&&prev.meta.campaign)||"Campaign"},locations:pa.locations||prev.locations,npcs:pa.npcs||prev.npcs,encounters:pa.encounters||prev.encounters,monsters:pa.monsters||prev.monsters,factions:pa.factions||prev.factions,sessions:pa.sessions||prev.sessions,party:pa.party||prev.party,storyNodes:pa.storyNodes||prev.storyNodes,storyEdges:pa.storyEdges||prev.storyEdges};saveAll(n);return n});shT("Imported!");sSl({type:null,id:null})},[shT]);
+
+  var hMerge=useCallback(function(pa,ms,ni){sDA(function(prev){
+    var ls={};TYPES.concat(["storyNodes","storyEdges","sessions"]).forEach(function(k){ls[k]=(prev[k]||[]).slice()});
+    function mrgArr(a,b){if(!b)return a||[];var r=(a||[]).slice();b.forEach(function(id){if(r.indexOf(id)<0)r.push(id)});return r}
+    function mrgSt(a,b){if(!b)return a||{};if(!a)return b;var r=Object.assign({},a);if(b.abilities){var ab=(r.abilities||["","","","","",""])
+.slice();b.abilities.forEach(function(v,i){if((!ab[i]||ab[i]==="")&&v&&v!=="")ab[i]=v});r.abilities=ab}if(b.saves){var sv=(r.saves||["","",""])
+.slice();b.saves.forEach(function(v,i){if((!sv[i]||sv[i]==="")&&v&&v!=="")sv[i]=v});r.saves=sv}
+    ["hp","ac","bab","init","speed","cr","size","type","subtypes","hd","ac_touch","ac_flat","fly","swim","climb","burrow","attacks","full_attack","damage","special_attacks","special_qualities"].forEach(function(k){if((!r[k]||r[k]==="")&&b[k]&&b[k]!=="")r[k]=b[k]});return r}
+    var cn=pa.campaign||(prev.meta&&prev.meta.campaign)||"Campaign";
+    ms.forEach(function(m){ls[m.type]=ls[m.type].map(function(e){if(e.id!==m.existing.id)return e;var up=Object.assign({},e);if(m.incoming.description&&m.incoming.description.trim()&&up.description&&up.description.indexOf(m.incoming.description.trim())<0)up.description=up.description+"\n\n--- Merged from "+cn+" ---\n\n"+m.incoming.description;else if(m.incoming.description&&!up.description)up.description=m.incoming.description;
+    ["npcs","locations","encounters","monsters","factions","related_npcs"].forEach(function(f){if(m.incoming[f])up[f]=mrgArr(up[f],m.incoming[f])});if(m.incoming.stats)up.stats=mrgSt(up.stats,m.incoming.stats);return up})});
+    var idMap={};ni.forEach(function(n){if(n.type==="storyNodes"||n.type==="storyEdges")return;var nid=gid(n.type==="locations"?"loc":n.type==="npcs"?"npc":n.type==="encounters"?"enc":n.type==="monsters"?"mon":"fac");idMap[n.item.id]=nid;ls[n.type]=(ls[n.type]||[]).concat([Object.assign({},n.item,{id:nid})])});
+    ni.forEach(function(n){if(n.type==="storyNodes"){var nid=gid("stn");idMap[n.item.id]=nid;ls.storyNodes=(ls.storyNodes||[]).concat([Object.assign({},n.item,{id:nid,encounter_id:n.item.encounter_id?(idMap[n.item.encounter_id]||n.item.encounter_id):null})])}});
+    if(pa.storyEdges)pa.storyEdges.forEach(function(e){ls.storyEdges=(ls.storyEdges||[]).concat([{id:gid("ste"),from:idMap[e.from]||e.from,to:idMap[e.to]||e.to}])});
+    TYPES.concat(["monsters"]).forEach(function(lt){ls[lt]=(ls[lt]||[]).map(function(e){var ch=false,up={};["npcs","locations","encounters","monsters","factions","related_npcs"].forEach(function(f){if(e[f]&&Array.isArray(e[f])){var rm=e[f].map(function(id){return idMap[id]||id});if(rm.join(",")!==e[f].join(",")){up[f]=rm;ch=true}}});if(e.parent&&idMap[e.parent]){up.parent=idMap[e.parent];ch=true}return ch?Object.assign({},e,up):e})});
+    var res=Object.assign({},prev,ls,{meta:{campaign:prev.meta?prev.meta.campaign:cn}});saveAll(res);return res});shT("Merged!");sSl({type:null,id:null})},[shT]);
+
+  var addEnt=useCallback(function(type){var e=tmpl(type);if(!e)return;sDA(function(prev){var l=[e].concat(prev[type]||[]);sSave(type,l);return Object.assign({},prev,{[type]:l})});sSl({type:type,id:e.id});sVw("content")},[]);
+  var addSes=useCallback(function(){var s={id:gid("ses"),date:new Date().toISOString().split("T")[0],title:"",notes:[]};sDA(function(prev){var ss=[s].concat(prev.sessions||[]);sSave("sessions",ss);return Object.assign({},prev,{sessions:ss})});sSl({type:"sessions",id:s.id});sVw("content")},[]);
+  var crInline=useCallback(function(type,name){var e=tmpl(type,name);if(!e)return null;sDA(function(prev){var l=(prev[type]||[]).concat([e]);sSave(type,l);return Object.assign({},prev,{[type]:l})});return e.id},[]);
+  var updateParty=useCallback(function(partyArr){sDA(function(prev){sSave("party",partyArr);return Object.assign({},prev,{party:partyArr})});shT("Party updated")},[shT]);
+
+  // Sync story node edits back to encounter database
+  var syncEnc=useCallback(function(encId,fields){
+    sDA(function(prev){
+      var encs=(prev.encounters||[]).map(function(e){
+        if(e.id===encId)return Object.assign({},e,fields);return e;
+      });
+      sSave("encounters",encs);
+      return Object.assign({},prev,{encounters:encs});
+    });
+  },[]);
+
+  // When switching to storyline, sync story node names from encounters
+  useEffect(function(){
+    if(vw!=="storyline")return;
+    sDA(function(prev){
+      var changed=false;
+      var sns=(prev.storyNodes||[]).map(function(sn){
+        if(!sn.encounter_id)return sn;
+        var enc=(prev.encounters||[]).find(function(e){return e.id===sn.encounter_id});
+        if(enc&&(enc.name!==sn.name||enc.type!==sn.type||enc.status!==sn.status)){
+          changed=true;
+          return Object.assign({},sn,{name:enc.name,type:enc.type,status:enc.status||sn.status});
+        }
+        return sn;
+      });
+      if(changed){sSave("storyNodes",sns);return Object.assign({},prev,{storyNodes:sns})}
+      return prev;
+    });
+  },[vw]);
+
+  var sRes=null;if(sr.trim().length>1){var q=sr.toLowerCase();sRes={};TYPES.forEach(function(t){var m=(da[t]||[]).filter(function(e){return(e.name&&e.name.toLowerCase().indexOf(q)>=0)||(e.description&&e.description.toLowerCase().indexOf(q)>=0)});if(m.length>0)sRes[t]=m})}
+  var sEnt=sl.type&&sl.id?(da[sl.type]||[]).find(function(e){return e.id===sl.id}):null;
+  var locTree=buildTree(da.locations);
+
+  if(lo)return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",fontFamily:"'Alegreya',serif",fontSize:20,color:"#8b5e3c"}}>Loading...</div>;
+
+  return(<><div className="app">
+    {sb&&<div className="sb-bk" onClick={function(){sSb(false)}}/>}
+    <div className={"sidebar"+(sb?"":" closed")}><div className="sb-hd"><h1>{(da.meta&&da.meta.campaign)||"DM Toolkit"}</h1><button className="sb-x" onClick={function(){sSb(false)}}><IX/></button></div>
+      <div className="sb-sr"><div className="sb-si"><ISearch/><input placeholder="Search..." value={sr} onChange={function(e){sSr(e.target.value)}}/>{sr&&<button style={{background:"none",border:"none",cursor:"pointer",color:"var(--txs)",padding:3}} onClick={function(){sSr("")}}><IX/></button>}</div></div>
+      <div className="sb-sc">
+        {sRes?<div>{Object.keys(sRes).length===0&&<div style={{padding:16,color:"var(--txs)",opacity:.5,fontSize:13,textAlign:"center"}}>No results</div>}{Object.entries(sRes).map(function(e){var t=e[0],its=e[1];return <div key={t}><div className="sg-l">{t} ({its.length})</div>{its.map(function(i){return <div key={i.id} className={"sb-it"+(sl.type===t&&sl.id===i.id?" act":"")} onClick={function(){nav(t,i.id)}}><span className="ic">{iFor(t)}</span><span className="nm">{i.name}</span></div>})}</div>})}</div>
+        :<>
+          <div className="st-flt"><input type="checkbox" id="flt" checked={flt} onChange={function(){sFlt(!flt)}}/><label htmlFor="flt">{flt?"Active Only":"Show All"}</label></div>
+          <LocSec locs={da.locations} locTree={locTree} sl={sl} nav={nav} te={te} sTe={sTe} addEnt={addEnt} filter={flt}/>
+          <Sec title="NPCs" icon={<INpc/>} items={(da.npcs||[]).slice().sort(function(a,b){return(a.name||"").localeCompare(b.name||"")})} type="npcs" sel={sl} onSel={nav} onAdd={function(){addEnt("npcs")}} defOpen={true} filter={flt}/>
+          <Sec title="Encounters" icon={<IEnc/>} items={da.encounters||[]} type="encounters" sel={sl} onSel={nav} onAdd={function(){addEnt("encounters")}} defOpen={true} filter={flt}/>
+          <Sec title="Monsters" icon={<IMon/>} items={(da.monsters||[]).slice().sort(function(a,b){return(a.name||"").localeCompare(b.name||"")})} type="monsters" sel={sl} onSel={nav} onAdd={function(){addEnt("monsters")}} defOpen={true} filter={flt}/>
+          <Sec title="Factions" icon={<IFac/>} items={(da.factions||[]).slice().sort(function(a,b){return(a.name||"").localeCompare(b.name||"")})} type="factions" sel={sl} onSel={nav} onAdd={function(){addEnt("factions")}} defOpen={true} filter={flt}/>
+          <div className="sb-sec"><div className="sec-h open" style={{cursor:"default"}}><span className="ar"><IChev/></span><IDoc/><span>Sessions</span><span className="bd">{da.sessions?da.sessions.length:0}</span></div><button className="sb-add" onClick={addSes}><IPlus/> New Session</button>{(da.sessions||[]).map(function(s){return <div key={s.id} className={"sb-it"+(sl.type==="sessions"&&sl.id===s.id?" act":"")} onClick={function(){nav("sessions",s.id)}}><span className="ic"><IDoc/></span><span className="nm">{s.title||s.date||"Untitled"}</span></div>})}</div>
+        </>}
+      </div>
+    </div>
+    <div className="ct"><div className="tb">
+      <button className="tb-b" onClick={function(){sSb(!sb)}}><IMenu/></button>
+      <button className={"tb-b"+(vw==="content"?" on":"")} onClick={function(){sVw("content")}} title="Content"><IDoc/></button>
+      <button className={"tb-b"+(vw==="party"?" on":"")} onClick={function(){sVw("party")}} title="Party"><IPty/></button>
+      <div className="cbt-toggle"><button className={"tb-b"+(cbt?" on":"")} onClick={function(){sCbt(!cbt)}} title="Combat Tracker"><IInit/></button>{cIts.length>0&&!cbt&&<div className="cbt-badge"/>}</div>
+      <button className={"tb-b"+(vw==="storyline"?" on":"")} onClick={function(){sVw("storyline")}} title="Storyline"><IGr/></button>
+      <div className="tb-t">{vw==="storyline"?"Adventure Storyline":vw==="party"?"Party Dashboard":(sEnt?(sEnt.name||sEnt.title||sEnt.date||"Untitled"):((da.meta&&da.meta.campaign)||"DM Toolkit"))}</div>
+      <div style={{display:"flex",gap:6,flexShrink:0}}><button className="btn btn-s" onClick={function(){sSe2(true)}}><IDn/> Export</button><button className="btn btn-s" onClick={function(){sSi(true)}}><IUp/> Import</button></div>
+    </div>
+    {vw==="storyline"?<StoryView nodes={da.storyNodes} edges={da.storyEdges} setNodes={function(fn){sDA(function(p){return Object.assign({},p,{storyNodes:typeof fn==="function"?fn(p.storyNodes):fn})})}} setEdges={function(fn){sDA(function(p){return Object.assign({},p,{storyEdges:typeof fn==="function"?fn(p.storyEdges):fn})})}} data={da} onNav={nav} showT={shT} onCreateEnc={crInline} onSyncEnc={syncEnc}/>
+    :vw==="party"?<PartyView party={da.party} onUpdate={updateParty}/>
+    :<div className="ct-sc">{!sEnt?<div className="welcome"><h2>Welcome, Dungeon Master</h2><p>{da.locations&&da.locations.length>0?"Select an entry from the sidebar, or switch to Storyline view.":"Import adventure data or add entries to get started."}</p>{(!da.locations||da.locations.length===0)&&<button className="btn btn-p" onClick={function(){sSi(true)}}><IUp/> Import</button>}{da.locations&&da.locations.length>0&&<div style={{color:"var(--tx2)",fontSize:13,marginTop:6}}>{da.locations.length} loc · {(da.npcs||[]).length} NPCs · {(da.encounters||[]).length} enc · {(da.monsters||[]).length} mon · {(da.party||[]).length} PCs</div>}</div>
+    :sl.type==="sessions"?<SesDet session={sEnt} onSave={hSave} onDel={hDel}/>
+    :<EntDet type={sl.type} entity={sEnt} data={da} onSave={hSave} onNav={nav} onDel={hDel} onCr={crInline}/>}</div>}
+    </div>
+  </div>
+  <CombatPanel open={cbt} onClose={function(){sCbt(false)}} party={da.party} its={cIts} sIts={sCIts} rnd={cRnd} sRnd={sCRnd} act={cAct} sAct={sCAct} fxs={cFxs} sFxs={sCFxs}/>
+  {se2&&<ExpMo onClose={function(){sSe2(false)}} onDone={function(){shT("Exported")}}/>}
+  {si&&<ImpMo onClose={function(){sSi(false)}} onImp={hImp} onMerge={hMerge} data={da}/>}
+  {to&&<Toast key={to.key} msg={to.msg} type={to.type} onDone={function(){sTo(null)}}/>}
+  </>);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
