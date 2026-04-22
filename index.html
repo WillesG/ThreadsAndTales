@@ -1030,7 +1030,7 @@ function App(){
 
   return(<><div className="app">
     {sb&&<div className="sb-bk" onClick={function(){sSb(false)}}/>}
-    <div className={"sidebar"+(sb?"":" closed")}><div className="sb-hd"><img src="logo.png" style={{width:28,height:28,borderRadius:4,flexShrink:0,filter:"invert(1) sepia(1) saturate(3) hue-rotate(340deg) brightness(0.85)"}} alt=""/><h1>{(da.meta&&da.meta.campaign)||"DM Toolkit"}</h1><button className="sb-x" onClick={function(){sSb(false)}}><IX/></button></div>
+    <div className={"sidebar"+(sb?"":" closed")}><div className="sb-hd"><img src="flavicon2.svg" style={{width:28,height:28,borderRadius:4,flexShrink:0}} alt=""/><h1>{(da.meta&&da.meta.campaign)||"DM Toolkit"}</h1><button className="sb-x" onClick={function(){sSb(false)}}><IX/></button></div>
       <div className="sb-sr"><div className="sb-si"><ISearch/><input placeholder="Search..." value={sr} onChange={function(e){sSr(e.target.value)}}/>{sr&&<button style={{background:"none",border:"none",cursor:"pointer",color:"var(--txs)",padding:3}} onClick={function(){sSr("")}}><IX/></button>}</div></div>
       <div className="sb-sc">
         {sRes?<div>{Object.keys(sRes).length===0&&<div style={{padding:16,color:"var(--txs)",opacity:.5,fontSize:13,textAlign:"center"}}>No results</div>}{Object.entries(sRes).map(function(e){var t=e[0],its=e[1];return <div key={t}><div className="sg-l">{t} ({its.length})</div>{its.map(function(i){return <div key={i.id} className={"sb-it"+(sl.type===t&&sl.id===i.id?" act":"")} onClick={function(){nav(t,i.id)}}><span className="ic">{iFor(t)}</span><span className="nm">{i.name}</span></div>})}</div>})}</div>
