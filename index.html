@@ -435,6 +435,7 @@ function IGr(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none
 function IChev(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>}
 function IPlus(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>}
 function ISave(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>}
+function IEdit(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>}
 function IUp(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
 function IDn(){return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>}
 function IMenu(){return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
@@ -717,7 +718,7 @@ function newPC(){return{id:gid("pc"),name:"New Character",player_name:"",race:""
 
 function PCCard(p){
   var c=p.pc;
-  var _ed=useState(false);var ed=_ed[0];var sEd=_ed[1];
+  var _ed=useState(p.startEditing||false);var ed=_ed[0];var sEd=_ed[1];
   var _sk=useState("");var sk=_sk[0];var sSk=_sk[1];
   var pct=c.hp_max>0?Math.max(0,Math.min(100,Math.round(c.hp_current/c.hp_max*100))):100;
   var hpCol=pct>60?"#16a34a":pct>30?"#d97706":"#dc2626";
@@ -728,15 +729,16 @@ function PCCard(p){
   function rmSk(i){var ks=(c.key_skills||[]).slice();ks.splice(i,1);p.onChange(c.id,Object.assign({},c,{key_skills:ks}))}
   function chSk(i,f,v){var ks=(c.key_skills||[]).slice();ks[i]=Object.assign({},ks[i],{[f]:v});p.onChange(c.id,Object.assign({},c,{key_skills:ks}))}
   function chSS(lv,v){var ss=Object.assign({},c.spell_slots||{});if(v===""||v==="0")delete ss[lv];else ss[lv]=parseInt(v)||0;p.onChange(c.id,Object.assign({},c,{spell_slots:ss}))}
+  function tog(){if(ed&&p.onEditDone)p.onEditDone();sEd(!ed)}
   var init=(c.name||"?")[0].toUpperCase();
   return(<div className="pc-card">
     <div className="pc-top"><div className="pc-av">{init}</div><div className="pc-id"><div className="pc-nm">{c.name}</div><div className="pc-cl">{c.race} {c.class_name}{c.level?" Lv"+c.level:""}</div>{c.player_name&&<div className="pc-pl">Player: {c.player_name}</div>}</div>
-      <div className="pc-edit"><button onClick={function(){sEd(!ed)}} title="Edit"><ISave/></button><button className="del" onClick={function(){p.onDel(c.id)}} title="Delete"><ITr/></button></div>
+      <div className="pc-edit"><button onClick={tog} title={ed?"Save":"Edit"}>{ed?<ISave/>:<IEdit/>}</button><button className="del" onClick={function(){p.onDel(c.id)}} title="Delete"><ITr/></button></div>
     </div>
-    {/* HP bar */}
+    {/* HP bar - always visible */}
     <div className="pc-hp"><div className="pc-hp-r"><label>HP</label><div className="pc-hp-bar"><div className="pc-hp-fill" style={{width:pct+"%",background:hpCol}}/></div><div className="pc-hp-v"><input className="pc-hp-in" value={c.hp_current} onChange={function(e){ch("hp_current",parseInt(e.target.value)||0)}}/> / <input className="pc-hp-in" value={c.hp_max} onChange={function(e){ch("hp_max",parseInt(e.target.value)||1)}}/></div></div></div>
-    {/* Quick stats */}
-    <div className="pc-qs">
+    {/* Quick stats - VIEW MODE ONLY */}
+    {!ed&&<div className="pc-qs">
       <div className="pc-q"><label>AC</label><div className="qv">{c.ac}</div></div>
       <div className="pc-q"><label>Touch</label><div className="qv">{c.ac_touch||"—"}</div></div>
       <div className="pc-q"><label>Flat</label><div className="qv">{c.ac_flat||"—"}</div></div>
@@ -746,18 +748,16 @@ function PCCard(p){
       <div className="pc-q"><label>Speed</label><div className="qv-sm">{c.speed||"—"}</div></div>
       <div className="pc-q"><label>Spot</label><div className="qv">{c.spot||"—"}</div></div>
       <div className="pc-q"><label>Listen</label><div className="qv">{c.listen||"—"}</div></div>
-    </div>
-    {/* Abilities */}
-    <div className="pc-abs"><div className="sg">{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(c.abilities&&c.abilities[i])||""} onChange={function(e){chA(i,e.target.value)}} placeholder="—"/></div>})}</div></div>
-    {/* Saves */}
-    <div className="pc-svs">{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"45px"}} value={(c.saves&&c.saves[i])||""} onChange={function(e){chSv(i,e.target.value)}} placeholder="—"/></div>})}</div>
-    {/* Skills */}
-    {((c.key_skills&&c.key_skills.length>0)||ed)&&<div className="pc-sk"><div className="pc-sk-l">Key Skills</div><div className="pc-sk-r">{(c.key_skills||[]).map(function(s,i){return <div key={i} className="pc-sk-ch" title="Click to remove" style={{cursor:ed?"pointer":"default"}} onClick={function(){if(ed)rmSk(i)}}>{s.name} {s.modifier&&<span style={{fontWeight:700}}>{s.modifier}</span>}{ed&&<span style={{marginLeft:2,opacity:.5}}>x</span>}</div>})}</div>
-    {ed&&<div style={{display:"flex",gap:4,marginTop:6}}><input style={{flex:1,padding:"4px 8px",border:"1px solid var(--bd)",borderRadius:5,fontSize:12,fontFamily:"inherit",outline:"none"}} value={sk} onChange={function(e){sSk(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addSk()}} placeholder="Add skill..."/><button className="btn btn-s btn-sm" onClick={addSk}><IPlus/></button></div>}
     </div>}
-    {/* Spell Slots */}
-    {(Object.keys(c.spell_slots||{}).length>0||ed)&&<div className="pc-sp"><div className="pc-sp-l">Spell Slots</div><div className="pc-sp-r">{[1,2,3,4,5,6,7,8,9].map(function(lv){var v=c.spell_slots&&c.spell_slots[lv];if(!v&&!ed)return null;return <div key={lv} className="pc-sp-lv"><strong>Lv{lv}:</strong> <input style={{width:30,border:"1px solid var(--bd)",borderRadius:3,textAlign:"center",fontSize:12,padding:"1px 2px",fontFamily:"inherit",outline:"none"}} value={v||""} onChange={function(e){chSS(lv,e.target.value)}} placeholder="—"/></div>})}</div></div>}
-    {/* Edit fields */}
+    {/* Abilities - VIEW MODE ONLY */}
+    {!ed&&<div className="pc-abs"><div className="sg">{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(c.abilities&&c.abilities[i])||""} onChange={function(e){chA(i,e.target.value)}} placeholder="—"/></div>})}</div></div>}
+    {/* Saves - VIEW MODE ONLY */}
+    {!ed&&<div className="pc-svs">{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"45px"}} value={(c.saves&&c.saves[i])||""} onChange={function(e){chSv(i,e.target.value)}} placeholder="—"/></div>})}</div>}
+    {/* Skills - VIEW MODE ONLY (in edit mode they're in the form) */}
+    {!ed&&c.key_skills&&c.key_skills.length>0&&<div className="pc-sk"><div className="pc-sk-l">Key Skills</div><div className="pc-sk-r">{(c.key_skills||[]).map(function(s,i){return <div key={i} className="pc-sk-ch">{s.name} {s.modifier&&<span style={{fontWeight:700}}>{s.modifier}</span>}</div>})}</div></div>}
+    {/* Spell Slots - VIEW MODE ONLY */}
+    {!ed&&Object.keys(c.spell_slots||{}).length>0&&<div className="pc-sp"><div className="pc-sp-l">Spell Slots</div><div className="pc-sp-r">{[1,2,3,4,5,6,7,8,9].map(function(lv){var v=c.spell_slots&&c.spell_slots[lv];if(!v)return null;return <div key={lv} className="pc-sp-lv"><strong>Lv{lv}:</strong> {v}</div>})}</div></div>}
+    {/* Edit form - EDIT MODE ONLY */}
     {ed&&<div className="pc-edt">
       <div className="pc-row"><label>Name</label><input value={c.name||""} onChange={function(e){ch("name",e.target.value)}}/></div>
       <div className="pc-row"><label>Player</label><input value={c.player_name||""} onChange={function(e){ch("player_name",e.target.value)}}/></div>
@@ -774,21 +774,31 @@ function PCCard(p){
       <div className="pc-row"><label>Spot</label><input style={{width:50}} value={c.spot||""} onChange={function(e){ch("spot",e.target.value)}}/></div>
       <div className="pc-row"><label>Listen</label><input style={{width:50}} value={c.listen||""} onChange={function(e){ch("listen",e.target.value)}}/></div>
       <div className="pc-row"><label>Langs</label><input value={c.languages||""} onChange={function(e){ch("languages",e.target.value)}}/></div>
+      <div className="pc-sk-l" style={{marginTop:8}}>Abilities</div>
+      <div className="sg" style={{marginTop:0}}>{ABILS.map(function(ab,i){return <div key={ab} className="sb2"><label>{ab}</label><input value={(c.abilities&&c.abilities[i])||""} onChange={function(e){chA(i,e.target.value)}} placeholder="—"/></div>})}</div>
+      <div className="pc-sk-l" style={{marginTop:8}}>Saves</div>
+      <div style={{display:"flex",gap:4}}>{SAVS.map(function(sv,i){return <div key={sv} className="sm"><label>{sv}</label><input style={{width:"45px"}} value={(c.saves&&c.saves[i])||""} onChange={function(e){chSv(i,e.target.value)}} placeholder="—"/></div>})}</div>
+      <div className="pc-sk-l" style={{marginTop:8}}>Key Skills</div>
+      <div className="pc-sk-r">{(c.key_skills||[]).map(function(s,i){return <div key={i} className="pc-sk-ch" style={{cursor:"pointer"}} onClick={function(){rmSk(i)}}>{s.name} {s.modifier&&<span style={{fontWeight:700}}>{s.modifier}</span>}<span style={{marginLeft:2,opacity:.5}}>x</span></div>})}</div>
+      <div style={{display:"flex",gap:4,marginTop:4}}><input style={{flex:1,padding:"4px 8px",border:"1px solid var(--bd)",borderRadius:5,fontSize:12,fontFamily:"inherit",outline:"none"}} value={sk} onChange={function(e){sSk(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")addSk()}} placeholder="Add skill..."/><button className="btn btn-s btn-sm" onClick={addSk}><IPlus/></button></div>
+      <div className="pc-sk-l" style={{marginTop:8}}>Spell Slots</div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{[1,2,3,4,5,6,7,8,9].map(function(lv){var v=c.spell_slots&&c.spell_slots[lv];return <div key={lv} className="pc-sp-lv"><strong>Lv{lv}:</strong> <input style={{width:30,border:"1px solid var(--bd)",borderRadius:3,textAlign:"center",fontSize:12,padding:"1px 2px",fontFamily:"inherit",outline:"none"}} value={v||""} onChange={function(e){chSS(lv,e.target.value)}} placeholder="—"/></div>})}</div>
     </div>}
-    {/* Notes */}
+    {/* Notes - always visible */}
     <div className="pc-nt"><textarea value={c.notes||""} onChange={function(e){ch("notes",e.target.value)}} placeholder="Notes..."/></div>
   </div>);
 }
 
 function PartyView(p){
   var party=p.party||[];
-  function add(){var pc=newPC();p.onUpdate(party.concat([pc]))}
+  var _newId=useState(null);var newId=_newId[0];var sNewId=_newId[1];
+  function add(){var pc=newPC();sNewId(pc.id);p.onUpdate(party.concat([pc]))}
   function del(id){if(!window.confirm("Remove this character?"))return;p.onUpdate(party.filter(function(c){return c.id!==id}))}
   function change(id,updated){p.onUpdate(party.map(function(c){return c.id===id?updated:c}))}
   return(<div className="pty-wrap">
     <div className="pty-hd"><h2>Party ({party.length})</h2><button className="btn btn-p" onClick={add}><IPlus/> Add Character</button></div>
     {party.length===0&&<div className="welcome"><h2>No Party Members</h2><p>Add your players' characters to track their stats at the table.</p><button className="btn btn-p" onClick={add}><IPlus/> Add First Character</button></div>}
-    <div className="pty-grid">{party.map(function(pc){return <PCCard key={pc.id} pc={pc} onChange={change} onDel={del}/>})}</div>
+    <div className="pty-grid">{party.map(function(pc){return <PCCard key={pc.id} pc={pc} onChange={change} onDel={del} startEditing={pc.id===newId} onEditDone={function(){if(pc.id===newId)sNewId(null)}}/>})}</div>
   </div>);
 }
 
